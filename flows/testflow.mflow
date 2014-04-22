@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="testFlow">
+    <global-element name="csv_to_list_user_" type="http://www.mulesoft.org/schema/mule/ee/data-mapper/config" entity-id="!!!6db22a2e-c810-469d-8520-4de30dc22636">
+        <properties>
+            <property name="doc:description" value="CSV To List&lt;User&gt;"/>
+            <property name="name" value="csv_to_list_user_"/>
+            <property name="doc:name" value="csv_to_list_user_"/>
+            <property name="transformationGraphPath" value="csv_to_list_user_.grf"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="true" name="updateUserSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="a23988e9-db2b-4814-8c8f-3a04d38c7fd3">
+        <properties/>
+        <description></description>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="ca5d9cdb-4684-4f44-9867-8a630ebb7f10">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <pattern name="Set Payload" type="http://www.mulesoft.org/schema/mule/core/set-payload" entity-id="7f7ceaf1-7716-46e7-8c66-5fce513a5cff">
+                <graphicalData x="21" y="292" width="92" height="74"/>
+                <properties>
+                    <property name="updated"/>
+                    <property name="value" value="005d0000000yYC7, 22.4.2014 13:11"/>
+                </properties>
+                <description></description>
+            </pattern>
+            <pattern name="CSV To List&lt;User&gt;" type="http://www.mulesoft.org/schema/mule/ee/data-mapper/data-mapper-connector" entity-id="84e75f4f-b25a-4ed3-b7ff-c4d228202073">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/ee/data-mapper/transform"/>
+                    <property name="config-ref" value="csv_to_list_user_"/>
+                </properties>
+            </pattern>
+            <pattern name="Update User" type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" entity-id="65bef49b-6c1f-4ba2-a850-470ebd504e78">
+                <graphicalData x="173" y="292" width="96" height="74"/>
+                <properties>
+                    <property name="" value=""/>
+                    <property name="proxyUsername" value=""/>
+                    <property name="securityToken" value=""/>
+                    <property name="proxyHost" value=""/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/sfdc/update"/>
+                    <property name="proxyPort" value="80"/>
+                    <property name="type" value="User"/>
+                    <property name="password" value=""/>
+                    <property name="url" value="https://login.salesforce.com/services/Soap/u/28.0"/>
+                    <property name="username" value=""/>
+                    <property name="auxiliary;moved-from"/>
+                    <property name="updated"/>
+                    <property name="sessionId" value=""/>
+                    <property name="serviceEndpoint" value=""/>
+                    <property name="accessTokenId" value=""/>
+                    <property name="config-ref" value="SalesforceA"/>
+                    <property name="proxyPassword" value=""/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/update-objectss;1">
+                        <property name="ref" value="#[payload]"/>
+                    </property-collection>
+                </properties>
+                <description></description>
+            </pattern>
+        </lane>
+    </flow>
+    <description></description>
+</mule-configuration>

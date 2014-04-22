@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="errorHandling.">
+    <global-element name="defaultChoiceExceptionStrategy" type="http://www.mulesoft.org/schema/mule/core/choice-exception-strategy" entity-id="!!!b74c68c3-73dd-4b6c-a029-b83b69949176">
+        <properties>
+            <property name="name" value="Choice_Exception_Strategy"/>
+        </properties>
+        <description></description>
+        <compartment>
+            <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="b3a063d6-0115-4687-b743-2fcdcc14127b">
+                <scope name="Catch Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/catch-exception-strategy" entity-id="1bef7067-10d6-49fb-9cbb-c79b629f611f">
+                    <graphicalData x="0" y="0" width="0" height="0"/>
+                    <properties>
+                        <property name="labelConfigureConditionalExecutionUsingExpression" value=""/>
+                        <property name="updated"/>
+                        <property name="when" value="#[exception.causedBy(java.lang.Exception)]"/>
+                        <property name="enableNotifications" value="true"/>
+                    </properties>
+                    <description></description>
+                    <compartment entity-id="7c6dfdb7-30fd-4bc3-96e5-fc01946ff2e0">
+                        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="4935ec10-ec6c-4a43-96fe-dc3b60341f45">
+                            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="4e1e69ca-72f1-4d16-a333-5d8204b7a2df">
+<graphicalData x="0" y="0" width="0" height="0"/>
+<properties/>
+                            </pattern>
+                        </lane>
+                    </compartment>
+                </scope>
+            </lane>
+        </compartment>
+    </global-element>
+    <description></description>
+</mule-configuration>

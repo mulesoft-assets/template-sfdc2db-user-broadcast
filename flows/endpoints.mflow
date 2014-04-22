@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="endpoints">
+    <flow SubFlow="false" name="mainFlow" type="http://www.mulesoft.org/schema/mule/core/flow" entity-id="a4574094-4e21-4dd9-9f9e-c2d6b7093974">
+        <properties>
+            <property name="initialState" value="started"/>
+            <property name="processingStrategy2" value="synchronous"/>
+            <property name="processingStrategy" value="synchronous"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="1"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <scope name="Salesforce for users" type="org.mule.tooling.ui.modules.core.endpoint.Poller" entity-id="Poll#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="frequency"/>
+                    <property name="cron-scheduler"/>
+                    <property name="fixed-frequency-scheduler"/>
+                    <property name="auxiliary;index" value="2"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/fixed-frequency-scheduler;0">
+                        <property name="startDelay" value="${poll.startDelayMillis}"/>
+                        <property name="frequency" value="${poll.frequencyMillis}"/>
+                        <property name="auxiliary;wrapIn" value="3"/>
+                        <property name="auxiliary;index" value="3"/>
+                    </property-collection>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/core/watermark;0">
+                        <property name="selector" value="MAX"/>
+                        <property name="default-expression" value="2013-02-21T17:48:00.000Z"/>
+                        <property name="selector-expression" value="#[payload.LastModifiedDate]"/>
+                        <property name="variable" value="lastQueryDate"/>
+                        <property name="auxiliary;wrapIn" value="4"/>
+                        <property name="auxiliary;index" value="4"/>
+                    </property-collection>
+                </properties>
+                <compartment entity-id="compartment#1">
+                    <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+                        <pattern name="Query Salesforce by lastQueryDate" type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" entity-id="Salesforce#1">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name=""/>
+<property name="fetchSize" value="200"/>
+<property name="proxyUsername"/>
+<property name="securityToken"/>
+<property name="proxyHost"/>
+<property name="query" value="dsql:SELECT Alias,Email,EmailEncodingKey,FirstName,LanguageLocaleKey,LastModifiedDate,LastName,LocaleSidKey,ProfileId,TimeZoneSidKey,Title,Username FROM User WHERE (LastModifiedDate &gt; #[lastQueryDate] AND IsActive = true)"/>
+<property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/sfdc/query"/>
+<property name="proxyPort"/>
+<property name="password"/>
+<property name="url"/>
+<property name="username"/>
+<property name="sessionId"/>
+<property name="serviceEndpoint"/>
+<property name="accessTokenId"/>
+<property name="config-ref" value="SalesforceA"/>
+<property name="proxyPassword"/>
+<property name="auxiliary;index" value="5"/>
+                            </properties>
+                            <description></description>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </scope>
+            <pattern name="log lastQueryDate" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="message" value="lastQueryDate:  #[flowVars.'lastQueryDate']"/>
+                    <property name="category"/>
+                    <property name="level" value="INFO"/>
+                    <property name="auxiliary;index" value="6"/>
+                </properties>
+                <description></description>
+            </pattern>
+            <pattern name="Batch execute for Upsert in database" type="http://www.mulesoft.org/schema/mule/batch/execute" entity-id="Batch Execute#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="name" value="syncUsersBatch"/>
+                    <property name="auxiliary;index" value="7"/>
+                </properties>
+            </pattern>
+            <pattern name="Reference Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/exception-strategy" entity-id="Reference Exception Strategy#1">
+                <properties>
+                    <property name="ref" value="Choice_Exception_Strategy"/>
+                    <property name="auxiliary;index" value="8"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+</mule-configuration>

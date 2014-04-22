@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="businessLogic.">
+    <flow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="container" SubFlow="false" type="http://www.mulesoft.org/schema/mule/batch/job" entity-id="Batch#1">
+        <properties>
+            <property name="name" value="syncUsersBatch"/>
+            <property name="max-failed-records"/>
+            <property name="scheduling-strategy"/>
+            <property name="auxiliary;index" value="1"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/batch/threading-profile;0">
+                <property name="poolExhaustedAction" value="WAIT"/>
+                <property name="auxiliary;wrapIn" value="2"/>
+                <property name="auxiliary;index" value="2"/>
+            </property-collection>
+        </properties>
+        <lane xsi:type="nestedContainer" name="Input" type="http://www.mulesoft.org/schema/mule/batch/input" hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="31a52329-5430-4d86-bca1-2f05766b5857"/>
+        <lane xsi:type="nestedContainer" name="Process Records" type="http://www.mulesoft.org/schema/mule/batch/process-records" hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="da367b4c-36af-45b5-b914-f56a925f91f4">
+            <scope type="http://www.mulesoft.org/schema/mule/batch/step" entity-id="Batch Step#1">
+                <properties>
+                    <property name="filter-expression"/>
+                    <property name="name" value="foreachUser"/>
+                    <property name="accept-policy"/>
+                    <property name="auxiliary;index" value="4"/>
+                </properties>
+                <compartment entity-id="compartment#1">
+                    <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+                        <pattern name="Store current user into recordVars" type="http://www.mulesoft.org/schema/mule/batch/record-variable-transformer" entity-id="Record Variable#1">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="variableName" value="user"/>
+<property name="value" value="#[message.payload]"/>
+<property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/batch/set-record-variable"/>
+<property name="auxiliary;index" value="5"/>
+                            </properties>
+                        </pattern>
+                        <pattern name="Query database for current user by email" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#1">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="streaming"/>
+<property name=""/>
+<property name="source"/>
+<property name="statementFactory-ref"/>
+<property name="transactionalAction"/>
+<property name="target"/>
+<property name="maxRows"/>
+<property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/select"/>
+<property name="config-ref" value="GenericDatabaseConnector"/>
+<property name="auxiliary;index" value="6"/>
+<property-collection name="@http://www.mulesoft.org/schema/mule/db/template-query-ref;0">
+    <property name="name" value="QueryUserByEmail"/>
+    <property name="auxiliary;index" value="7"/>
+    <property name="auxiliary;wrapIn" value="7"/>
+</property-collection>
+<property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;0">
+    <property name="name" value="paramEmail"/>
+    <property name="value" value="#[recordVars.user.Email]"/>
+    <property name="auxiliary;index" value="8"/>
+    <property name="auxiliary;wrapIn" value="8"/>
+</property-collection>
+                            </properties>
+                        </pattern>
+                        <splitter index="9" name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#1">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="tracking:enable-default-events" value="true"/>
+<property-collection name="79ca7023-a762-4b63-a803-bd6a0ffc38a5">
+    <property name="choice.expression" value="#[message.payload.size() &gt;= 1]"/>
+    <property-collection name="choice.attributes">
+        <property name="expression" value="#[message.payload.size() &gt;= 1]"/>
+    </property-collection>
+</property-collection>
+<property-collection name="6ec8145b-b79e-4eea-848e-185b210b8591">
+    <property name="choice.otherwise" value="true"/>
+    <property-collection name="choice.attributes"/>
+</property-collection>
+                            </properties>
+                            <pattern name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#2"/>
+                            <compartment entity-id="compartment#2">
+<lane hadOnlyOneElement="false" index="11" isChoiceOtherwiseLane="false" entity-id="79ca7023-a762-4b63-a803-bd6a0ffc38a5">
+    <pattern name="Update user in database" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#2">
+        <graphicalData x="0" y="0" width="0" height="0"/>
+        <properties>
+            <property name=""/>
+            <property name="source"/>
+            <property name="statementFactory-ref"/>
+            <property name="transactionalAction"/>
+            <property name="target"/>
+            <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/update"/>
+            <property name="config-ref" value="GenericDatabaseConnector"/>
+            <property name="auxiliary;index" value="11"/>
+            <property name="bulkMode"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-query-ref;0">
+                <property name="name" value="UpdateUser"/>
+                <property name="auxiliary;index" value="12"/>
+                <property name="auxiliary;wrapIn" value="12"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;0">
+                <property name="name" value="firstname"/>
+                <property name="value" value="#[recordVars.user.FirstName]"/>
+                <property name="auxiliary;index" value="13"/>
+                <property name="auxiliary;wrapIn" value="13"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;1">
+                <property name="name" value="lastname"/>
+                <property name="value" value="#[recordVars.user.LastName]"/>
+                <property name="auxiliary;index" value="14"/>
+                <property name="auxiliary;wrapIn" value="14"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;2">
+                <property name="name" value="salesforce_id"/>
+                <property name="value" value="#[recordVars.user.Id]"/>
+                <property name="auxiliary;index" value="15"/>
+                <property name="auxiliary;wrapIn" value="15"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;3">
+                <property name="name" value="email"/>
+                <property name="value" value="#[recordVars.user.Email]"/>
+                <property name="auxiliary;index" value="16"/>
+                <property name="auxiliary;wrapIn" value="16"/>
+            </property-collection>
+        </properties>
+    </pattern>
+    <pattern name="log user update action" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+        <graphicalData x="0" y="0" width="0" height="0"/>
+        <properties>
+            <property name="message" value="number of updated rows:  #[message.payload]"/>
+            <property name="category"/>
+            <property name="level" value="INFO"/>
+            <property name="auxiliary;index" value="17"/>
+        </properties>
+    </pattern>
+</lane>
+<lane hadOnlyOneElement="false" index="19" isChoiceOtherwiseLane="true" entity-id="6ec8145b-b79e-4eea-848e-185b210b8591">
+    <pattern name="Insert user in database" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#3">
+        <graphicalData x="0" y="0" width="0" height="0"/>
+        <properties>
+            <property name=""/>
+            <property name="source"/>
+            <property name="autoGeneratedKeysColumnNames"/>
+            <property name="statementFactory-ref"/>
+            <property name="transactionalAction"/>
+            <property name="target"/>
+            <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/insert"/>
+            <property name="autoGeneratedKeysColumnIndexes"/>
+            <property name="config-ref" value="GenericDatabaseConnector"/>
+            <property name="auxiliary;index" value="19"/>
+            <property name="autoGeneratedKeys"/>
+            <property name="bulkMode"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-query-ref;0">
+                <property name="name" value="InsertUser"/>
+                <property name="auxiliary;index" value="20"/>
+                <property name="auxiliary;wrapIn" value="20"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;0">
+                <property name="name" value="firstname"/>
+                <property name="value" value="#[recordVars.user.FirstName]"/>
+                <property name="auxiliary;index" value="21"/>
+                <property name="auxiliary;wrapIn" value="21"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;1">
+                <property name="name" value="lastname"/>
+                <property name="value" value="#[recordVars.user.LastName]"/>
+                <property name="auxiliary;index" value="22"/>
+                <property name="auxiliary;wrapIn" value="22"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;2">
+                <property name="name" value="salesforce_id"/>
+                <property name="value" value="#[recordVars.user.Id]"/>
+                <property name="auxiliary;index" value="23"/>
+                <property name="auxiliary;wrapIn" value="23"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;3">
+                <property name="name" value="email"/>
+                <property name="value" value="#[recordVars.user.Email]"/>
+                <property name="auxiliary;index" value="24"/>
+                <property name="auxiliary;wrapIn" value="24"/>
+            </property-collection>
+        </properties>
+    </pattern>
+    <pattern name="log user insert action" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#2">
+        <graphicalData x="0" y="0" width="0" height="0"/>
+        <properties>
+            <property name="message" value="number of inserted rows:  #[message.payload]"/>
+            <property name="category"/>
+            <property name="level" value="INFO"/>
+            <property name="auxiliary;index" value="25"/>
+        </properties>
+    </pattern>
+</lane>
+                            </compartment>
+                        </splitter>
+                    </lane>
+                </compartment>
+            </scope>
+            <properties>
+                <property name="auxiliary;index" value="3"/>
+            </properties>
+        </lane>
+        <lane xsi:type="nestedContainer" name="On Complete" type="http://www.mulesoft.org/schema/mule/batch/on-complete" hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="c86476e8-416a-4cfb-aae3-a9f510ecaf33">
+            <pattern name="transform BatchJobInstance to JSON" type="http://www.mulesoft.org/schema/mule/json/object-to-json-transformer" entity-id="Object to JSON#1">
+                <properties>
+                    <property name="sourceClass"/>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mapper-ref"/>
+                    <property name="auxiliary;index" value="27"/>
+                    <property name="mimeType"/>
+                </properties>
+            </pattern>
+            <pattern name="log 'Migration process has finished'" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#3">
+                <properties>
+                    <property name="message" value="Migration process has finished: #[payload]"/>
+                    <property name="category"/>
+                    <property name="level" value="INFO"/>
+                    <property name="auxiliary;index" value="28"/>
+                </properties>
+            </pattern>
+            <properties>
+                <property name="auxiliary;index" value="26"/>
+            </properties>
+        </lane>
+        <containerBehavior>default</containerBehavior>
+    </flow>
+    <description></description>
+</mule-configuration>

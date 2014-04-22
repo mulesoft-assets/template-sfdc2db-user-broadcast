@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
+    <data-mapper:config name="csv_to_list_user_" transformationGraphPath="csv_to_list_user_.grf" doc:name="csv_to_list_user_"/>
+    <sub-flow name="updateUserSubFlow" doc:name="updateUserSubFlow">
+        <set-payload value="005d0000000yYC7, 22.4.2014 13:11" doc:name="Set Payload"/>
+        <data-mapper:transform config-ref="csv_to_list_user_" doc:name="CSV To List&lt;User&gt;"/>
+        <sfdc:update config-ref="SalesforceA" type="User" doc:name="Update User">
+            <sfdc:objects ref="#[payload]"/>
+        </sfdc:update>
+    </sub-flow>
+</mule>
