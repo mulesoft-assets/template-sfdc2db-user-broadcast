@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="test-flow.">
+    <flow SubFlow="true" name="updateUserSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="ddf44ae9-cb70-447a-ae49-6878bc2241ae">
+        <properties>
+            <property name="initialState"/>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="2"/>
+        </properties>
+        <description></description>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <pattern name="Update User" type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" entity-id="Salesforce#1">
+                <graphicalData x="173" y="380" width="96" height="74"/>
+                <properties>
+                    <property name="" value=""/>
+                    <property name="proxyUsername" value=""/>
+                    <property name="securityToken" value=""/>
+                    <property name="proxyHost" value=""/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/sfdc/update"/>
+                    <property name="proxyPort" value="80"/>
+                    <property name="type" value="User"/>
+                    <property name="password" value=""/>
+                    <property name="url" value=""/>
+                    <property name="username" value=""/>
+                    <property name="updated"/>
+                    <property name="sessionId" value=""/>
+                    <property name="serviceEndpoint" value=""/>
+                    <property name="accessTokenId" value=""/>
+                    <property name="config-ref" value="SalesforceA"/>
+                    <property name="auxiliary;index" value="5"/>
+                    <property name="proxyPassword" value=""/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/update-objectss;1">
+                        <property name="auxiliary;index" value="6"/>
+                        <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/update-objects;3e58b7aa:145897dfc0e:-7ffc">
+                            <property name="key" value="Entry 1: Map&lt;k,v&gt;"/>
+                            <property name="value-ref" value=""/>
+                            <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-update-objects;3e58b7aa:145897dfc0e:-7ffb">
+<property name="value" value="005d0000000yYC7"/>
+<property name="key" value="Id"/>
+                            </property-collection>
+                        </property-collection>
+                    </property-collection>
+                </properties>
+                <description></description>
+            </pattern>
+        </lane>
+    </flow>
+    <description></description>
+</mule-configuration>

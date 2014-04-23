@@ -14,6 +14,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         </poll>
         <logger message="lastQueryDate:  #[flowVars.'lastQueryDate']" level="INFO" doc:name="log lastQueryDate"/>
         <batch:execute name="syncUsersBatch" doc:name="Batch execute for Upsert in database"/>
+        <logger message="EEEEEEEEEEEEEEEEEEEND #[payload]" level="INFO" doc:name="Logger"/>
         <exception-strategy ref="Choice_Exception_Strategy" doc:name="Reference Exception Strategy"/>
     </flow>
 </mule>

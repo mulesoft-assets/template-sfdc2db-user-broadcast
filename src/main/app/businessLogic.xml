@@ -41,6 +41,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         </batch:process-records>
         <batch:on-complete>
             <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
+            <set-payload value="xxxxxx" doc:name="Set Payload"/>
             <logger message="Migration process has finished: #[payload]" level="INFO" doc:name="log 'Migration process has finished'"/>
         </batch:on-complete>
     </batch:job>
