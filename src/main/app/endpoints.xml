@@ -6,15 +6,17 @@ http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-    <flow name="mainFlow" doc:name="mainFlow" processingStrategy="synchronous" initialState="started">
+    <flow name="triggerFlow" doc:name="triggerFlow" processingStrategy="synchronous" doc:description="This is the simpliest entry point to start the excecution of your Template
+Here you should: 
+	* Configure the inbound endpoint, in this case a polling to fetch data from origin system
+	* Handle any input parameter and set the scope of it so the main logic does not care from where it is called">
         <poll doc:name="Salesforce for users">
             <fixed-frequency-scheduler frequency="${poll.frequencyMillis}" startDelay="${poll.startDelayMillis}"/>
             <watermark variable="lastQueryDate" default-expression="2013-02-21T17:48:00.000Z" selector="MAX" selector-expression="#[payload.LastModifiedDate]"/>
-            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT Alias,Email,EmailEncodingKey,FirstName,LanguageLocaleKey,LastModifiedDate,LastName,LocaleSidKey,ProfileId,TimeZoneSidKey,Title,Username FROM User WHERE (LastModifiedDate &gt; #[lastQueryDate] AND IsActive = true)" fetchSize="200" doc:name="Query Salesforce by lastQueryDate"/>
+            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT Alias,Email,EmailEncodingKey,FirstName,LanguageLocaleKey,LastModifiedDate,LastName,LocaleSidKey,ProfileId,TimeZoneSidKey,Title,Username, Id FROM User WHERE (LastModifiedDate &gt; #[lastQueryDate] AND IsActive = true)" fetchSize="200" doc:name="Query Salesforce by lastQueryDate"/>
         </poll>
         <logger message="lastQueryDate:  #[flowVars.'lastQueryDate']" level="INFO" doc:name="log lastQueryDate"/>
-        <batch:execute name="syncUsersBatch" doc:name="Batch execute for Upsert in database"/>
-        <logger message="EEEEEEEEEEEEEEEEEEEND #[payload]" level="INFO" doc:name="Logger"/>
+        <batch:execute name="syncUsersBatch" doc:name="trigger Batch execute for Upsert in database"/>
         <exception-strategy ref="Choice_Exception_Strategy" doc:name="Reference Exception Strategy"/>
     </flow>
 </mule>

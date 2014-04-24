@@ -284,6 +284,14 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc3</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.mulesoft.muleesb.modules</groupId>
+			<artifactId>mule-module-batch-ee</artifactId>
+			<version>${mule.version}</version>
+			<scope>test</scope>
+			<type>test-jar</type>
+		</dependency>		
 	
 		<dependency>
 			<groupId>org.mule</groupId>

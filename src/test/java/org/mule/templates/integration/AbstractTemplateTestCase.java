@@ -35,9 +35,9 @@ public class AbstractTemplateTestCase extends FunctionalTestCase {
 	private static final String TEST_FLOWS_FOLDER_PATH = "./src/test/resources/flows/";
 	private static final String MULE_DEPLOY_PROPERTIES_PATH = "./src/main/app/mule-deploy.properties";
 
-	protected static final int TIMEOUT_SEC = 300;
+	protected static final int TIMEOUT_SEC = 120;
 	protected static final String POLL_FLOW_NAME = "triggerFlow";
-	protected static final String TEMPLATE_NAME = "contact-broadcast";
+	protected static final String TEMPLATE_NAME = "user-broadcast";
 
 	protected final Prober pollProber = new PollingProber(60000, 1000l);
 	protected final PipelineSynchronizeListener pipelineListener = new PipelineSynchronizeListener(POLL_FLOW_NAME);

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="endpoints">
-    <flow SubFlow="false" name="mainFlow" type="http://www.mulesoft.org/schema/mule/core/flow" entity-id="ef317e3e-87c9-4cbc-b3d3-f2250f285d17">
+    <flow SubFlow="false" name="triggerFlow" type="http://www.mulesoft.org/schema/mule/core/flow" entity-id="61f7ad03-d739-44ee-82c7-25a2f86f8c4c">
         <properties>
             <property name="processingStrategy2" value="synchronous"/>
-            <property name="initialState" value="started"/>
+            <property name="initialState" value=""/>
+            <property name="auxiliary;erased;initialState" value="true"/>
             <property name="bussinessEventsLabel" value=""/>
             <property name="tracking:enable-default-events" value="false"/>
             <property name="auxiliary;index" value="1"/>
             <property name="updated"/>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/ee/tracking/transaction;122322217"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/ee/tracking/transaction;521753274"/>
         </properties>
-        <description></description>
+        <description>This is the simpliest entry point to start the excecution of your Template&#xD;
+Here you should: &#xD;
+	* Configure the inbound endpoint, in this case a polling to fetch data from origin system&#xD;
+	* Handle any input parameter and set the scope of it so the main logic does not care from where it is called</description>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
             <graphicalData x="0" y="0" width="0" height="0"/>
             <scope name="Salesforce for users" type="org.mule.tooling.ui.modules.core.endpoint.Poller" entity-id="Poll#1">
-                <graphicalData x="21" y="150" width="156" height="130"/>
+                <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name="frequency"/>
                     <property name="cron-scheduler"/>
@@ -46,7 +50,7 @@
 <property name="proxyUsername"/>
 <property name="securityToken"/>
 <property name="proxyHost"/>
-<property name="query" value="dsql:SELECT Alias,Email,EmailEncodingKey,FirstName,LanguageLocaleKey,LastModifiedDate,LastName,LocaleSidKey,ProfileId,TimeZoneSidKey,Title,Username FROM User WHERE (LastModifiedDate &gt; #[lastQueryDate] AND IsActive = true)"/>
+<property name="query" value="dsql:SELECT Alias,Email,EmailEncodingKey,FirstName,LanguageLocaleKey,LastModifiedDate,LastName,LocaleSidKey,ProfileId,TimeZoneSidKey,Title,Username, Id FROM User WHERE (LastModifiedDate &gt; #[lastQueryDate] AND IsActive = true)"/>
 <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/sfdc/query"/>
 <property name="proxyPort"/>
 <property name="password"/>
@@ -59,13 +63,12 @@
 <property name="proxyPassword"/>
 <property name="auxiliary;index" value="5"/>
                             </properties>
-                            <description></description>
                         </pattern>
                     </lane>
                 </compartment>
             </scope>
             <pattern name="log lastQueryDate" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
-                <graphicalData x="237" y="168" width="108" height="94"/>
+                <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name="message" value="lastQueryDate:  #[flowVars.'lastQueryDate']"/>
                     <property name="category"/>
@@ -73,28 +76,19 @@
                     <property name="auxiliary;index" value="6"/>
                 </properties>
             </pattern>
-            <pattern name="Batch execute for Upsert in database" type="http://www.mulesoft.org/schema/mule/batch/execute" entity-id="Batch Execute#1">
-                <graphicalData x="405" y="158" width="106" height="114"/>
+            <pattern name="trigger Batch execute for Upsert in database" type="http://www.mulesoft.org/schema/mule/batch/execute" entity-id="Batch Execute#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name="name" value="syncUsersBatch"/>
                     <property name="auxiliary;index" value="7"/>
                 </properties>
+                <description></description>
             </pattern>
             <pattern name="Reference Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/exception-strategy" entity-id="Reference Exception Strategy#1">
                 <properties>
                     <property name="ref" value="Choice_Exception_Strategy"/>
                     <property name="auxiliary;index" value="8"/>
                 </properties>
-            </pattern>
-            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="8e2dbdbe-0dbd-4ce1-8bb1-4c2f2c6239da">
-                <graphicalData x="0" y="0" width="0" height="0"/>
-                <properties>
-                    <property name="message" value="EEEEEEEEEEEEEEEEEEEND #[payload]"/>
-                    <property name="category" value=""/>
-                    <property name="level" value="INFO"/>
-                    <property name="updated"/>
-                </properties>
-                <description></description>
             </pattern>
         </lane>
     </flow>
