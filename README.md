@@ -89,7 +89,7 @@ In order to use this Template you need to configure properties (Credentials, con
 + sfdc.a.url `https://login.salesforce.com/services/Soap/u/28.0`
 
 #### Dabase connection url
-+ database.url=jdbc:postgresql://localhost:5432/mule?user=postgres&password=postgres
++ database.url=`jdbc:postgresql://localhost:5432/mule?user=postgres&password=postgres`
 
 # API Calls <a name="apicalls"/>
 
