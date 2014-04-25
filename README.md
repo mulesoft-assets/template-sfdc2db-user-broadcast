@@ -33,7 +33,7 @@ Finally during the On Complete stage the Template will logoutput statistics data
 
 # Run it!
 
-Simple steps to get SFDC to SFDC User Broadcast running.
+Simple steps to get SFDC to Databasa User Broadcast running.
 
 ## A few Considerations <a name="afewconsiderations" />
 
@@ -53,6 +53,8 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 
 + Locate the properties file `mule.dev.properties`, in src/main/resources
 + Complete all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
++ Add dependency for your Database driver to the pom.xml and rebuild
++ Configure GenericDatabaseConnector in Global Elements section to use your database specific driver. Classpath to the driver needs to be supplied here.
 + Once that is done, right click on you Anypoint Template project folder 
 + Hover you mouse over `"Run as"`
 + Click on  `"Mule Application"`
@@ -86,11 +88,8 @@ In order to use this Template you need to configure properties (Credentials, con
 + sfdc.a.securityToken `avsfwCUl7apQs56Xq2AKi3X`
 + sfdc.a.url `https://login.salesforce.com/services/Soap/u/28.0`
 
-#### SalesForce Connector configuration for company B
-+ sfdc.b.username `joan.baez@orgb`
-+ sfdc.b.password `JoanBaez456`
-+ sfdc.b.securityToken `ces56arl7apQs56XTddf34X`
-+ sfdc.b.url `https://login.salesforce.com/services/Soap/u/28.0`
+#### Dabase connection url
++ database.url=jdbc:postgresql://localhost:5432/mule?user=postgres&password=postgres
 
 # API Calls <a name="apicalls"/>
 

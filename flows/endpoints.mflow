@@ -1,45 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="endpoints">
-    <flow SubFlow="false" name="triggerFlow" type="http://www.mulesoft.org/schema/mule/core/flow" entity-id="61f7ad03-d739-44ee-82c7-25a2f86f8c4c">
+    <flow SubFlow="false" name="triggerFlow" type="http://www.mulesoft.org/schema/mule/core/flow" entity-id="569eff85-f2ee-4c8b-b746-1162f03c5a3e">
         <properties>
+            <property name="initialState"/>
             <property name="processingStrategy2" value="synchronous"/>
-            <property name="initialState" value=""/>
-            <property name="auxiliary;erased;initialState" value="true"/>
-            <property name="bussinessEventsLabel" value=""/>
-            <property name="tracking:enable-default-events" value="false"/>
+            <property name="processingStrategy" value="synchronous"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
             <property name="auxiliary;index" value="1"/>
-            <property name="updated"/>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/ee/tracking/transaction;521753274"/>
         </properties>
-        <description>This is the simpliest entry point to start the excecution of your Template&#xD;
-Here you should: &#xD;
-	* Configure the inbound endpoint, in this case a polling to fetch data from origin system&#xD;
+        <description>This is the simpliest entry point to start the excecution of your Template
+Here you should: 
+	* Configure the inbound endpoint, in this case a polling to fetch data from origin system
 	* Handle any input parameter and set the scope of it so the main logic does not care from where it is called</description>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
             <graphicalData x="0" y="0" width="0" height="0"/>
             <scope name="Salesforce for users" type="org.mule.tooling.ui.modules.core.endpoint.Poller" entity-id="Poll#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
-                    <property name="frequency"/>
                     <property name="cron-scheduler"/>
+                    <property name="frequency"/>
                     <property name="fixed-frequency-scheduler"/>
                     <property name="auxiliary;index" value="2"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/core/fixed-frequency-scheduler;0">
                         <property name="startDelay" value="${poll.startDelayMillis}"/>
                         <property name="frequency" value="${poll.frequencyMillis}"/>
-                        <property name="auxiliary;wrapIn" value="3"/>
                         <property name="auxiliary;index" value="3"/>
+                        <property name="auxiliary;wrapIn" value="3"/>
                     </property-collection>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/core/watermark;0">
+                        <property name="default-expression" value="2014-04-25T12:42:00.000Z"/>
                         <property name="selector" value="MAX"/>
-                        <property name="default-expression" value="2013-02-21T17:48:00.000Z"/>
                         <property name="selector-expression" value="#[payload.LastModifiedDate]"/>
                         <property name="variable" value="lastQueryDate"/>
-                        <property name="auxiliary;wrapIn" value="4"/>
                         <property name="auxiliary;index" value="4"/>
+                        <property name="auxiliary;wrapIn" value="4"/>
                     </property-collection>
                 </properties>
-                <description></description>
                 <compartment entity-id="compartment#1">
                     <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
                         <pattern name="Query Salesforce by lastQueryDate" type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" entity-id="Salesforce#1">
@@ -60,8 +57,8 @@ Here you should: &#xD;
 <property name="serviceEndpoint"/>
 <property name="accessTokenId"/>
 <property name="config-ref" value="SalesforceA"/>
-<property name="proxyPassword"/>
 <property name="auxiliary;index" value="5"/>
+<property name="proxyPassword"/>
                             </properties>
                         </pattern>
                     </lane>
@@ -82,7 +79,6 @@ Here you should: &#xD;
                     <property name="name" value="syncUsersBatch"/>
                     <property name="auxiliary;index" value="7"/>
                 </properties>
-                <description></description>
             </pattern>
             <pattern name="Reference Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/exception-strategy" entity-id="Reference Exception Strategy#1">
                 <properties>

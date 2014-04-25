@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="test-flow.">
-    <flow SubFlow="true" name="insertUserSalesforceSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="405fa9ca-68b6-4af2-9111-89d29834345a">
+    <flow SubFlow="true" name="insertUserSalesforceSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="88fc8356-64e9-49c8-a6b8-dc5026cd8fcd">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -106,11 +106,10 @@
                         </property-collection>
                     </property-collection>
                 </properties>
-                <description></description>
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="true" name="selectUserFromDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="816b3aa5-0f7e-4865-b2df-6f726b6ff5a8">
+    <flow SubFlow="true" name="deleteUserDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="f3981c12-6195-437d-85b1-1db5a06058d8">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -119,35 +118,65 @@
             <property name="tracking:enable-default-events"/>
             <property name="auxiliary;index" value="16"/>
         </properties>
-        <description></description>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
             <graphicalData x="0" y="0" width="0" height="0"/>
             <pattern name="Database" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
-                    <property name="streaming" value="false"/>
-                    <property name="auxiliary;metatype-attribute" value="text"/>
-                    <property name="source" value=""/>
-                    <property name="updated"/>
-                    <property name="statementFactory-ref" value=""/>
-                    <property name="transactionalAction" value="JOIN_IF_POSSIBLE"/>
-                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/select"/>
-                    <property name="target" value=""/>
-                    <property name="auxiliary;erased;maxRows" value="true"/>
-                    <property name="maxRows" value=""/>
+                    <property name=""/>
+                    <property name="source"/>
+                    <property name="statementFactory-ref"/>
+                    <property name="transactionalAction"/>
+                    <property name="target"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/delete"/>
                     <property name="config-ref" value="GenericDatabaseConnector"/>
                     <property name="auxiliary;index" value="17"/>
-                    <property name="auxiliary;metametadataStrategy" value="new-database-metadata-strategy"/>
+                    <property name="bulkMode"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/db/dynamic-query;0">
+                        <property name="text" value="delete from &quot;user&quot; where email = '#[payload.email]'"/>
+                        <property name="auxiliary;index" value="18"/>
+                        <property name="auxiliary;wrapIn" value="18"/>
+                    </property-collection>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="true" name="selectUserFromDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="bf248e4e-1f3d-45d5-984d-003551113a0e">
+        <properties>
+            <property name="initialState"/>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="19"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#3">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <pattern name="Database" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="streaming"/>
+                    <property name=""/>
+                    <property name="source"/>
+                    <property name="statementFactory-ref"/>
+                    <property name="transactionalAction"/>
+                    <property name="target"/>
+                    <property name="maxRows"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/select"/>
+                    <property name="config-ref" value="GenericDatabaseConnector"/>
+                    <property name="auxiliary;index" value="20"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-query-ref;0">
+                        <property name="name" value="QueryUserByEmail"/>
+                        <property name="auxiliary;index" value="21"/>
+                        <property name="auxiliary;wrapIn" value="21"/>
+                    </property-collection>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/db/in-param;0">
                         <property name="name" value="paramEmail"/>
                         <property name="value" value="#[message.payload['Email']]"/>
-                        <property name="auxiliary;wrapIn" value="19"/>
-                    </property-collection>
-                    <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-query-ref;0">
-                        <property name="name" value="QueryUserByEmail"/>
+                        <property name="auxiliary;index" value="22"/>
+                        <property name="auxiliary;wrapIn" value="22"/>
                     </property-collection>
                 </properties>
-                <description></description>
             </pattern>
         </lane>
     </flow>

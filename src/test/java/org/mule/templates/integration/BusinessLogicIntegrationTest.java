@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,9 +15,6 @@ import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.modules.salesforce.bulk.EnrichedUpsertResult;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
-import org.mule.tck.probe.PollingProber;
-import org.mule.tck.probe.Prober;
-import org.mule.templates.test.utils.PipelineSynchronizeListener;
 
 import com.mulesoft.module.batch.BatchTestHelper;
 
@@ -24,17 +22,12 @@ import com.mulesoft.module.batch.BatchTestHelper;
  * The objective of this class is to validate the correct behavior of the flows
  * for this Mule Template that make calls to external systems.
  */
-public class BusinessLogicIT extends AbstractTemplateTestCase {
+public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 	protected static final int TIMEOUT = 60;
+	private static final Logger log = Logger.getLogger(BusinessLogicIntegrationTest.class);
 	private static final String POLL_FLOW_NAME = "triggerFlow";
-	private SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow;
-
 	private BatchTestHelper helper;
-	private final Prober pollProber = new PollingProber(10000, 1000);
-	private final PipelineSynchronizeListener pipelineListener = new PipelineSynchronizeListener(
-			POLL_FLOW_NAME);
-
 	private Map<String, Object> user = null;
 
 	@BeforeClass
@@ -53,13 +46,18 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		helper = new BatchTestHelper(muleContext);
 
 		// prepare test data
-		user = createUser();
+		user = createUserSF();
 		insertUserSalesforce(user);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		stopFlowSchedulers(POLL_FLOW_NAME);
+
+		// delete previously created user from db
+		Map<String, Object> usr = new HashMap<String, Object>();
+		usr.put("email", user.get("Email"));
+		deleteUserFromDB(usr);
 	}
 
 	@Test
@@ -76,16 +74,16 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		final String email = (String) user.get("Email");
 		final Map<String, Object> userToRetrieveMail = new HashMap<String, Object>();
 		userToRetrieveMail.put("Email", email);
-		System.err.println(userToRetrieveMail);
+		log.info("userToRetrieveMail: " + userToRetrieveMail);
 
 		// Execute selectUserFromDB sublow
-		selectUserFromDBFlow = getSubFlow("selectUserFromDB");
+		SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow = getSubFlow("selectUserFromDB");
 		final MuleEvent event = selectUserFromDBFlow.process(getTestEvent(userToRetrieveMail, MessageExchangePattern.REQUEST_RESPONSE));
 		final List<Map<String, Object>> payload = (List<Map<String, Object>>) event.getMessage().getPayload();
 
 		// print result
 		for (Map<String, Object> usr : payload)
-			System.err.println("response " + usr);
+			log.info("selectUserFromDB response: " + usr);
 
 		// User previously created in Salesforce should be present in database
 		Assert.assertEquals("The user should have been sync", 1, payload.size());
@@ -102,12 +100,12 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 		// store Id into our user
 		for (EnrichedUpsertResult item : result) {
-			System.err.println("response from salesforce " + item);
+			log.info("response from insertUserSalesforceSubFlow: " + item);
 			user.put("Id", item.getId());
 		}
 	}
 
-	private Map<String, Object> createUser() {
+	private Map<String, Object> createUserSF() {
 		final Map<String, Object> user = new HashMap<String, Object>();
 		final String name = "tst" + RandomStringUtils.randomAlphabetic(5).toLowerCase();
 		final String uniqueEmail = buildUniqueEmail(name);
@@ -123,6 +121,15 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		user.put("ProfileId", "00ed0000000GO9T");
 		user.put("EmailEncodingKey", "ISO-8859-1");
 		return user;
+	}
+
+	private void deleteUserFromDB(Map<String, Object> user) throws Exception {
+		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("deleteUserDB");
+		flow.initialise();
+
+		MuleEvent event = flow.process(getTestEvent(user, MessageExchangePattern.REQUEST_RESPONSE));
+		Object result = event.getMessage().getPayload();
+		log.info("deleteUserDB result: " + result);
 	}
 
 }

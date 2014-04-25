@@ -26,6 +26,11 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	        </sfdc:objects>       
         </sfdc:upsert>
     </sub-flow>
+    <sub-flow name="deleteUserDB" doc:name="deleteUserDB">
+        <db:delete config-ref="GenericDatabaseConnector" doc:name="Database">
+            <db:dynamic-query><![CDATA[delete from "user" where email = '#[payload.email]']]></db:dynamic-query>
+        </db:delete>
+    </sub-flow>    
     <sub-flow name="selectUserFromDB" doc:name="selectUserFromDB">
         <db:select config-ref="GenericDatabaseConnector" doc:name="Database">
             <db:template-query-ref name="QueryUserByEmail"/>
