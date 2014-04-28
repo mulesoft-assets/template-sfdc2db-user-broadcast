@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="endpoints">
-    <flow SubFlow="false" name="triggerFlow" type="http://www.mulesoft.org/schema/mule/core/flow" entity-id="11abd6c7-57ba-47f7-80b8-1df7945fc1f4">
+    <flow SubFlow="false" name="triggerFlow" type="http://www.mulesoft.org/schema/mule/core/flow" entity-id="b7fd7b12-2a83-46b6-b579-6eb6b7e356d1">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2" value="synchronous"/>
@@ -18,23 +18,23 @@ Here you should:
             <scope name="Salesforce for users" type="org.mule.tooling.ui.modules.core.endpoint.Poller" entity-id="Poll#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
-                    <property name="cron-scheduler"/>
                     <property name="frequency"/>
+                    <property name="cron-scheduler"/>
                     <property name="fixed-frequency-scheduler"/>
                     <property name="auxiliary;index" value="2"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/core/fixed-frequency-scheduler;0">
                         <property name="startDelay" value="${poll.startDelayMillis}"/>
                         <property name="frequency" value="${poll.frequencyMillis}"/>
-                        <property name="auxiliary;index" value="3"/>
                         <property name="auxiliary;wrapIn" value="3"/>
+                        <property name="auxiliary;index" value="3"/>
                     </property-collection>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/core/watermark;0">
-                        <property name="default-expression" value="YESTERDAY"/>
                         <property name="selector" value="MAX"/>
+                        <property name="default-expression" value="YESTERDAY"/>
                         <property name="selector-expression" value="#[payload.LastModifiedDate]"/>
                         <property name="variable" value="lastQueryDate"/>
-                        <property name="auxiliary;index" value="4"/>
                         <property name="auxiliary;wrapIn" value="4"/>
+                        <property name="auxiliary;index" value="4"/>
                     </property-collection>
                 </properties>
                 <compartment entity-id="compartment#1">
@@ -57,14 +57,14 @@ Here you should:
 <property name="serviceEndpoint"/>
 <property name="accessTokenId"/>
 <property name="config-ref" value="SalesforceA"/>
-<property name="auxiliary;index" value="5"/>
 <property name="proxyPassword"/>
+<property name="auxiliary;index" value="5"/>
                             </properties>
                         </pattern>
                     </lane>
                 </compartment>
             </scope>
-            <pattern name="log lastQueryDate" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+            <pattern name="Log lastQueryDate" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name="message" value="lastQueryDate:  #[flowVars.'lastQueryDate']"/>
@@ -72,13 +72,15 @@ Here you should:
                     <property name="level" value="INFO"/>
                     <property name="auxiliary;index" value="6"/>
                 </properties>
+                <description></description>
             </pattern>
-            <pattern name="trigger Batch execute for Upsert in database" type="http://www.mulesoft.org/schema/mule/batch/execute" entity-id="Batch Execute#1">
+            <pattern name="Trigger Batch execute for Upsert in database" type="http://www.mulesoft.org/schema/mule/batch/execute" entity-id="Batch Execute#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name="name" value="syncUsersBatch"/>
                     <property name="auxiliary;index" value="7"/>
                 </properties>
+                <description></description>
             </pattern>
         </lane>
     </flow>

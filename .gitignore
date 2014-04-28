@@ -48,3 +48,4 @@ target/
 **/*.mflow
 /bin
 
+flows/*
