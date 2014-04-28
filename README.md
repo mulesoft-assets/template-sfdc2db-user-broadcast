@@ -69,11 +69,9 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 ## Running on CloudHub <a name="runoncloudhub"/>
 
 While [creating your application on CloudHub](http://www.mulesoft.org/documentation/display/current/Hello+World+on+CloudHub) (Or you can do it later as a next step), you need to go to Deployment > Advanced to set all environment variables detailed in **Properties to be configured** as well as the **mule.env**. 
-
-Once your app is all set and started, there is no need to do anything else. Every time a User is created or modified, it will be automatically synchronised to SFDC Org B as long as it has an Email.
+Follow other steps defined [here](#runonpremise) and once your app is all set and started, there is no need to do anything else. Every time a User is created or modified, it will be automatically synchronised to supplied database table as long as it has an Email.
 
 ## Properties to be configured (With examples) <a name="propertiestobeconfigured"/>
-
 In order to use this Template you need to configure properties (Credentials, configurations, etc.) either in properties file or in CloudHub as Environment Variables. Detail list with examples:
 
 ### Application configuration
