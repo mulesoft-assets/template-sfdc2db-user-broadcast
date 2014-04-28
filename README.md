@@ -55,6 +55,7 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 + Complete all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
 + Add dependency for your Database driver to the pom.xml or simplt add external jar to the build path and rebuild project
 + Configure GenericDatabaseConnector in Global Elements section of the config flow to use your database specific driver. Classpath to the driver needs to be supplied here.
++ By default this template relies on existing table "user" in the schema "mule" in the database of your choice, so it will perform sql statements against this table, but feel free to customize prepared statements to use different database table or columns. But keep in mind that you also need to change datamapper component accordingly. 
 + Once that is done, right click on you Anypoint Template project folder 
 + Hover you mouse over `"Run as"`
 + Click on  `"Mule Application"`
