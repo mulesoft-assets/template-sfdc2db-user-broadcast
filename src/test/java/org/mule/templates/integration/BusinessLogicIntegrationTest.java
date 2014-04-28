@@ -15,6 +15,7 @@ import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.modules.salesforce.bulk.EnrichedUpsertResult;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
+import org.mule.templates.builders.SfdcObjectBuilder;
 
 import com.mulesoft.module.batch.BatchTestHelper;
 
@@ -118,24 +119,26 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	}
 
 	private Map<String, Object> createSalesforceUser() {
-		final Map<String, Object> user = new HashMap<String, Object>();
 		final String name = "tst" + buildUniqueName(5);
 		final String uniqueEmail = buildUniqueEmail(name);
-		user.put("Email", uniqueEmail);
-		user.put("UserName", uniqueEmail);
-		user.put("LastName", name);
-		user.put("FirstName", name);
-		user.put("Alias", name);
-		user.put("CommunityNickname", name);
 
-		// hardcoded defaults
-		user.put("LocaleSidKey", "en_US");
-		user.put("LanguageLocaleKey", "en_US");
-		user.put("TimeZoneSidKey", "America/New_York");
+		SfdcObjectBuilder builder = new SfdcObjectBuilder();
+		final Map<String, Object> user = builder
+				.with("Email", uniqueEmail)
+				.with("UserName", uniqueEmail)
+				.with("LastName", name)
+				.with("FirstName", name)
+				.with("Alias", name)
+				.with("CommunityNickname", name)
 
-		// id of the chatter external user profile
-		user.put("ProfileId", "00ed0000000GO9T");
-		user.put("EmailEncodingKey", "ISO-8859-1");
+				// hardcoded defaults
+				.with("LocaleSidKey", "en_US")
+				.with("LanguageLocaleKey", "en_US")
+				.with("TimeZoneSidKey", "America/New_York")
+
+				// id of the chatter external user profile
+				.with("ProfileId", "00ed0000000GO9T")
+				.with("EmailEncodingKey", "ISO-8859-1").build();
 		return user;
 	}
 
