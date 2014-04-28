@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="test-flow.">
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="test-flows.">
     <flow SubFlow="true" name="insertUserSalesforceSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="88fc8356-64e9-49c8-a6b8-dc5026cd8fcd">
         <properties>
             <property name="initialState"/>

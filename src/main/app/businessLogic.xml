@@ -10,8 +10,8 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:process-records>
             <batch:step name="foreachUser">
-                <enricher source="#[payload]" target="#[recordVars.user]" doc:name="Store fetched user into recordVars">
-                    <db:select config-ref="GenericDatabaseConnector" doc:name="Query database for current user by email">
+                <enricher source="#[payload]" target="#[recordVars.user]" doc:name="Store payload into variable 'user'">
+                    <db:select config-ref="GenericDatabaseConnector" doc:name="Query User by matching email from Database">
                         <db:template-query-ref name="QueryUserByEmail"/>
                         <db:in-param name="paramEmail" value="#[payload.Email]"/>
                     </db:select>
@@ -25,7 +25,6 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
                             <db:in-param name="salesforce_id" value="#[payload.Id]"/>
                             <db:in-param name="email" value="#[payload.Email]"/>
                         </db:update>
-                        <logger message="number of updated rows:  #[message.payload]" level="INFO" doc:name="log user update action"/>
                     </when>
                     <otherwise>
                         <db:insert config-ref="GenericDatabaseConnector" doc:name="Insert user in database">
@@ -35,7 +34,6 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
                             <db:in-param name="salesforce_id" value="#[payload.Id]"/>
                             <db:in-param name="email" value="#[payload.Email]"/>                            
                         </db:insert>
-                        <logger message="number of inserted rows:  #[message.payload]" level="INFO" doc:name="log user insert action"/>
                     </otherwise>
                 </choice>
             </batch:step>

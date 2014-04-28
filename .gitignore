@@ -48,6 +48,3 @@ target/
 **/*.mflow
 /bin
 
-/src/main/resources/*.properties
-/src/main/resources/mule.dev.properties
-

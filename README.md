@@ -27,13 +27,13 @@ Requirements have been set not only to be used as examples, but also to establis
 As implemented, this Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
 The batch job is divided in Input, Process and On Complete stages.
 The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest SalesForce updates/creations matching a filter criteria and executing the batch job.
-During the Process stage, each SFDC User will be filtered depending on, if it has an existing matching user in the SFDC Org B.
-The last step of the Process stage will group the users and create/update them in SFDC Org B.
+During the Process stage, each SFDC User will be filtered depending on, if it has an existing matching user in the database
+The last step of the Process stage will group the users and insert/update them in database.
 Finally during the On Complete stage the Template will logoutput statistics data into the console.
 
 # Run it!
 
-Simple steps to get SFDC to Databasa User Broadcast running.
+Simple steps to get SFDC to Database User Broadcast running.
 
 ## A few Considerations <a name="afewconsiderations" />
 
@@ -53,17 +53,17 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 
 + Locate the properties file `mule.dev.properties`, in src/main/resources
 + Complete all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
-+ Add dependency for your Database driver to the pom.xml and rebuild
-+ Configure GenericDatabaseConnector in Global Elements section to use your database specific driver. Classpath to the driver needs to be supplied here.
++ Add dependency for your Database driver to the pom.xml or simplt add external jar to the build path and rebuild project
++ Configure GenericDatabaseConnector in Global Elements section of the config flow to use your database specific driver. Classpath to the driver needs to be supplied here.
 + Once that is done, right click on you Anypoint Template project folder 
 + Hover you mouse over `"Run as"`
 + Click on  `"Mule Application"`
 
 
 ### Running on Mule ESB stand alone  <a name="runonmuleesbstandalone"/>
-Complete all properties in one of the property files, for example in [mule.prod.properties] (../blob/master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`.
-
-Once your app is all set and started, there is no need to do anything else. The application will poll SalesForce to know if there are any newly created or updated objects and synchronice them.
++ Complete all properties in one of the property files, for example in [mule.prod.properties] (../blob/master/src/main/resources/mule.prod.properties)
++ Follow other steps defined [here](#runonpremise) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`.
++ Once your app is all set and started, there is no need to do anything else. The application will poll SalesForce to know if there are any newly created or updated objects and synchronice them.
 
 ## Running on CloudHub <a name="runoncloudhub"/>
 
@@ -95,13 +95,7 @@ In order to use this Template you need to configure properties (Credentials, con
 
 SalesForce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. User Broadcast Template calls to the API can be calculated using the formula:
 
-***1 + UsersToSync + UsersToSync / CommitSize***
-
-Being ***UsersToSync*** the number of Users to be synchronized on each run. 
-
-The division by ***CommitSize*** is because by default, for each Upsert API Call, Users are gathered in groups of a number defined by the Commit Size property. Also consider that this calls are executed repeatedly every polling cycle.	
-
-For instance if 10 records are fetched from origin instance, then 12 api calls will be made (1 + 10 + 1).
+*** 1 ***
 
 # Customize It!<a name="customizeit"/>
 
@@ -118,7 +112,7 @@ Here is a list of the main XML files you'll find in this application:
 
 
 ## config.xml<a name="configxml"/>
-Configuration for Connectors and [Properties Place Holders](http://www.mulesoft.org/documentation/display/current/Configuring+Properties) are set in this file. **Even you can change the configuration here, all parameters that can be modified here are in properties file, and this is the recommended place to do it so.** Of course if you want to do core changes to the logic you will probably need to modify this file.
+Configuration for Connectors, prepared sql statements and [Properties Place Holders](http://www.mulesoft.org/documentation/display/current/Configuring+Properties) are set in this file. **Even you can change the configuration here, all parameters that can be modified here are in properties file, and this is the recommended place to do it so.** Of course if you want to do core changes to the logic you will probably need to modify this file.
 
 In the visual editor they can be found on the *Global Element* tab.
 
@@ -127,8 +121,8 @@ In the visual editor they can be found on the *Global Element* tab.
 Functional aspect of the Template is implemented on this XML, directed by one flow that will poll for SalesForce creations/updates. The severeal message processors constitute four high level actions that fully implement the logic of this Template:
 
 1. During the Input stage the Template will go to the SalesForce Org A and query all the existing users that match the filter criteria.
-2. During the Process stage, each SFDC User will be filtered depending on, if it has an existing matching user in the SFDC Org B.
-3. The last step of the Process stage will group the users and create/update them in SFDC Org B.
+2. During the Process stage, each SFDC User will checked by email against database, if it has an existing matching user in database.
+3. The choice routing element will then decide whether to perform update on selected database columns or peform insert
 Finally during the On Complete stage the Template will logoutput statistics data into the console.
 
 ## endpoints.xml<a name="endpointsxml"/>
@@ -144,7 +138,7 @@ Contains a [Catch Exception Strategy](http://www.mulesoft.org/documentation/disp
 
 You will notice that the Template has been shipped with test.
 
-**Consideration:** This template has only Integration Tests with a particular aspect compared to other templates. Users in SalesForce cannot be deleted in the UI or in the API, and for that reason, Users are not being created as part of test in order to avoid populating Sandboxes with data that cannoot be removed. Instead we are just updating an already existing User that can be defined by its Email. You should configure this before running tests.
+**Consideration:** This template has only Integration Tests with a particular aspect compared to other templates. Users in SalesForce cannot be deleted in the UI or in the API so keep in mind that after running integration test, new user with some hardcoded attributes will be created in Salesforce.
 
 You can run any of them by just doing right click on the class and clicking on run as Junit test.
 
