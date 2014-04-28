@@ -43,9 +43,8 @@ local.properties
 # Studio-specific #
 # --------------- #
 .studio/
-flows/
 target/
-**/*.mflow
-/bin
 
-flows/*
+/bin
+*.mflow
+flows/
