@@ -20,8 +20,7 @@ import org.mule.templates.builders.SfdcObjectBuilder;
 import com.mulesoft.module.batch.BatchTestHelper;
 
 /**
- * The objective of this class is to validate the correct behavior of the flows
- * for this Mule Template that make calls to external systems.
+ * The objective of this class is to validate the correct behavior of the flows for this Mule Template that make calls to external systems.
  */
 public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
@@ -55,7 +54,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	public void tearDown() throws Exception {
 		stopFlowSchedulers(POLL_FLOW_NAME);
 		// delete user from Salesforce
-		// user could at least flagged as inactive
+		// user could at least be flagged as inactive
 
 		// delete previously created user from db with matching email
 		Map<String, Object> usr = new HashMap<String, Object>();
