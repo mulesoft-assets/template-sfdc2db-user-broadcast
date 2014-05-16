@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:process-records>
             <batch:step name="checkUserInDatabaseStep">
-                <logger message="AAAA #[payload]" level="INFO" doc:name="Logger"/>
+
                 <enricher source="#[payload]" target="#[recordVars.user]" doc:name="Store payload into variable 'user'">
                     <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="query User by matching email from Database">
                         <db:template-query-ref name="QueryUserByEmail"/>
@@ -19,12 +19,12 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 
                     </db:select>
                 </enricher>
+
             </batch:step>
             <batch:step name="updateUserInDatabaseStep" filter-expression="#[recordVars['user'].size() == 0]">
-                <logger message="BBBBBB #[payload]" level="INFO" doc:name="Logger"/>
                 <batch:commit size="100" doc:name="Batch Commit">
-                    <db:update config-ref="GenericDatabaseConnectorMySql" doc:name="update user in database" bulkMode="true">
-                        <db:parameterized-query><![CDATA[UPDATE mulesoft.sf_user SET 
+                    <db:update config-ref="GenericDatabaseConnectorMySql" doc:name="update User in database" bulkMode="true">
+                        <db:parameterized-query><![CDATA[UPDATE sf_user SET 
 firstname = #[payload.FirstName], 
 lastname = #[payload.LastName], 
 salesforce_id = #[payload.Id]
@@ -34,13 +34,14 @@ WHERE email = #[payload.Email]]]></db:parameterized-query>
                 </batch:commit>
             </batch:step>
             <batch:step name="insertUserInDatabaseStep" filter-expression="#[recordVars['user'].size() &gt; 0]">
-                <logger message="CCCCC #[payload]" level="INFO" doc:name="Logger"/>
                 <batch:commit size="100" doc:name="Batch Commit">
-                    <db:insert config-ref="GenericDatabaseConnectorMySql" doc:name="insert user in database" bulkMode="true">
-                        <db:parameterized-query><![CDATA[INSERT INTO mulesoft.sf_user(firstname, lastname, salesforce_id, email)
+
+                    <db:insert config-ref="GenericDatabaseConnectorMySql" doc:name="insert User in database" bulkMode="true">
+                        <db:parameterized-query><![CDATA[INSERT INTO sf_user(firstname, lastname, salesforce_id, email)
 VALUES (#[payload.FirstName], #[payload.LastName], #[payload.Id], #[payload.Email])]]></db:parameterized-query>
 
                     </db:insert>
+
                 </batch:commit>
             </batch:step>
         </batch:process-records>

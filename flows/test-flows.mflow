@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="test-flows.">
-    <flow SubFlow="true" name="insertUserSalesforceSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="c589bea1-9873-4886-8468-1d4dfdcf4181">
+    <flow SubFlow="true" name="insertUserSalesforceSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="d8354cce-1a09-48c9-b08b-f26587fbaad4">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -11,7 +11,7 @@
         </properties>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
             <graphicalData x="0" y="0" width="0" height="0"/>
-            <pattern name="Insert User" type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" entity-id="Salesforce#1">
+            <pattern name="Insert User in SalesforceA" type="http://www.mulesoft.org/schema/mule/sfdc/sfdc-connector" entity-id="Salesforce#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name=""/>
@@ -29,87 +29,88 @@
                     <property name="serviceEndpoint"/>
                     <property name="accessTokenId"/>
                     <property name="config-ref" value="SalesforceA"/>
-                    <property name="proxyPassword"/>
                     <property name="auxiliary;index" value="2"/>
+                    <property name="proxyPassword"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/upsert-objectss;0">
-                        <property name="auxiliary;wrapIn" value="3"/>
                         <property name="auxiliary;index" value="3"/>
+                        <property name="auxiliary;wrapIn" value="3"/>
                         <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/upsert-objects;1">
-                            <property name="auxiliary;wrapIn" value="4"/>
                             <property name="auxiliary;index" value="4"/>
+                            <property name="auxiliary;wrapIn" value="4"/>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;1">
 <property name="value" value="#[payload.LocaleSidKey]"/>
-<property name="auxiliary;wrapIn" value="5"/>
-<property name="auxiliary;index" value="5"/>
 <property name="key" value="LocaleSidKey"/>
+<property name="auxiliary;index" value="5"/>
+<property name="auxiliary;wrapIn" value="5"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;2">
 <property name="value" value="#[payload.LastName]"/>
-<property name="auxiliary;wrapIn" value="6"/>
-<property name="auxiliary;index" value="6"/>
 <property name="key" value="LastName"/>
+<property name="auxiliary;index" value="6"/>
+<property name="auxiliary;wrapIn" value="6"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;3">
 <property name="value" value="#[payload.LanguageLocaleKey]"/>
-<property name="auxiliary;wrapIn" value="7"/>
-<property name="auxiliary;index" value="7"/>
 <property name="key" value="LanguageLocaleKey"/>
+<property name="auxiliary;index" value="7"/>
+<property name="auxiliary;wrapIn" value="7"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;4">
 <property name="value" value="#[payload.Email]"/>
-<property name="auxiliary;wrapIn" value="8"/>
-<property name="auxiliary;index" value="8"/>
 <property name="key" value="Email"/>
+<property name="auxiliary;index" value="8"/>
+<property name="auxiliary;wrapIn" value="8"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;5">
 <property name="value" value="#[payload.FirstName]"/>
-<property name="auxiliary;wrapIn" value="9"/>
-<property name="auxiliary;index" value="9"/>
 <property name="key" value="FirstName"/>
+<property name="auxiliary;index" value="9"/>
+<property name="auxiliary;wrapIn" value="9"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;6">
 <property name="value" value="#[payload.TimeZoneSidKey]"/>
-<property name="auxiliary;wrapIn" value="10"/>
-<property name="auxiliary;index" value="10"/>
 <property name="key" value="TimeZoneSidKey"/>
+<property name="auxiliary;index" value="10"/>
+<property name="auxiliary;wrapIn" value="10"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;7">
 <property name="value" value="#[payload.CommunityNickname]"/>
-<property name="auxiliary;wrapIn" value="11"/>
-<property name="auxiliary;index" value="11"/>
 <property name="key" value="CommunityNickname"/>
+<property name="auxiliary;index" value="11"/>
+<property name="auxiliary;wrapIn" value="11"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;8">
 <property name="value" value="#[payload.ProfileId]"/>
-<property name="auxiliary;wrapIn" value="12"/>
-<property name="auxiliary;index" value="12"/>
 <property name="key" value="ProfileId"/>
+<property name="auxiliary;index" value="12"/>
+<property name="auxiliary;wrapIn" value="12"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;9">
 <property name="value" value="#[payload.EmailEncodingKey]"/>
-<property name="auxiliary;wrapIn" value="13"/>
-<property name="auxiliary;index" value="13"/>
 <property name="key" value="EmailEncodingKey"/>
+<property name="auxiliary;index" value="13"/>
+<property name="auxiliary;wrapIn" value="13"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;10">
 <property name="value" value="#[payload.Alias]"/>
-<property name="auxiliary;wrapIn" value="14"/>
-<property name="auxiliary;index" value="14"/>
 <property name="key" value="Alias"/>
+<property name="auxiliary;index" value="14"/>
+<property name="auxiliary;wrapIn" value="14"/>
                             </property-collection>
                             <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/inner-upsert-objects;11">
 <property name="value" value="#[payload.Email]"/>
-<property name="auxiliary;wrapIn" value="15"/>
-<property name="auxiliary;index" value="15"/>
 <property name="key" value="Username"/>
+<property name="auxiliary;index" value="15"/>
+<property name="auxiliary;wrapIn" value="15"/>
                             </property-collection>
                         </property-collection>
                     </property-collection>
                 </properties>
+                <description></description>
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="true" name="deleteUserDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="71ed5ecc-0bf5-431d-b348-f81fac4ad7be">
+    <flow SubFlow="true" name="deleteUserDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="44388f63-987c-49b7-b226-2ad5f2b0d0a9">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -120,20 +121,20 @@
         </properties>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
             <graphicalData x="0" y="0" width="0" height="0"/>
-            <pattern name="Database" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#1">
+            <pattern name="delete User from db" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#1">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
-                    <property name="source" value=""/>
                     <property name="auxiliary;metatype-attribute" value="text"/>
+                    <property name="source" value=""/>
                     <property name="updated"/>
                     <property name="statementFactory-ref" value=""/>
                     <property name="transactionalAction" value="JOIN_IF_POSSIBLE"/>
-                    <property name="target" value=""/>
                     <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/delete"/>
+                    <property name="target" value=""/>
                     <property name="config-ref" value="GenericDatabaseConnectorMySql"/>
                     <property name="auxiliary;index" value="17"/>
-                    <property name="bulkMode" value="false"/>
                     <property name="auxiliary;metametadataStrategy" value="new-database-dynamic-statement-metadata-strategy"/>
+                    <property name="bulkMode" value="false"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/db/dynamic-query;0">
                         <property name="text" value="delete from sf_user where email = '#[payload.email]'"/>
                     </property-collection>
@@ -142,7 +143,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="true" name="selectUserFromDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="38fbac1c-3f42-4121-9b60-cbdc5bc86e87">
+    <flow SubFlow="true" name="selectUserFromDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="9058858c-c2e0-49e6-a951-f9e2e9d19bb4">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -153,7 +154,7 @@
         </properties>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#3">
             <graphicalData x="0" y="0" width="0" height="0"/>
-            <pattern name="Database" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#2">
+            <pattern name="query User from db" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#2">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
                     <property name="streaming" value="false"/>

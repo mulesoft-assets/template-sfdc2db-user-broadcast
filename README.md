@@ -69,10 +69,10 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 
 <pre>
 CREATE TABLE `sf_user` (
-  `firstname` varchar(50) DEFAULT NULL,
-  `lastname` varchar(45) DEFAULT NULL,
-  `salesforce_id` varchar(45) DEFAULT NULL,
-  `email` varchar(45) DEFAULT NULL,
+  `firstname` varchar(255) DEFAULT NULL,
+  `lastname` varchar(255) DEFAULT NULL,
+  `salesforce_id` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 )
