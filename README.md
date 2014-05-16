@@ -65,17 +65,16 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 + Complete all properties in one of the property files, for example in [mule.prod.properties] (../blob/master/src/main/resources/mule.prod.properties)
 + Follow other steps defined [here](#runonpremise) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`.
 + Once your app is all set and started, there is no need to do anything else. The application will poll SalesForce to know if there are any newly created or updated objects and synchronice them.
-+ Script for creating database table (Postgres syntax)
++ Script for creating database table (MySQL syntax)
 
 <pre>
-CREATE TABLE "user"
-(
-  firstname character varying,
-  lastname character varying,
-  salesforce_id character varying,
-  email character varying,
-  id serial NOT NULL,
-  CONSTRAINT pk_id PRIMARY KEY (id)
+CREATE TABLE `sf_user` (
+  `firstname` varchar(50) DEFAULT NULL,
+  `lastname` varchar(45) DEFAULT NULL,
+  `salesforce_id` varchar(45) DEFAULT NULL,
+  `email` varchar(45) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
 )
 </pre>
 + Optionally customize query templates in `config.mflow` if they don't match sql grammar of database of your choice
@@ -102,7 +101,7 @@ In order to use this Template you need to configure properties (Credentials, con
 + sfdc.a.url `https://login.salesforce.com/services/Soap/u/28.0`
 
 #### Dabase connection url
-+ database.url=`jdbc:postgresql://localhost:5432/mule?user=postgres&password=postgres`
++ database.url=`jdbc:mysql://localhost:3306/mulesoft?user=root`
 
 # API Calls <a name="apicalls"/>
 
