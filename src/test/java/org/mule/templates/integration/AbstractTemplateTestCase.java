@@ -27,7 +27,6 @@ import org.mule.transport.NullPayload;
 
 /**
  * This is the base test class for Anypoint Templates integration tests.
- * 
  * @author damiansima
  */
 public class AbstractTemplateTestCase extends FunctionalTestCase {
