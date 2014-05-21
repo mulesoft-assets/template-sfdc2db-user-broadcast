@@ -1,47 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
-http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
-http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <data-mapper:config name="Salesforce_User_to_db_User" transformationGraphPath="salesforce_user_to_db_user.grf" doc:name="Salesforce_User_to_db_User"/>
     <batch:job name="syncUsersBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:process-records>
             <batch:step name="checkUserInDatabaseStep">
-
                 <enricher source="#[payload]" target="#[recordVars.user]" doc:name="Store payload into variable 'user'">
                     <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="query User by matching email from Database">
-                        <db:template-query-ref name="QueryUserByEmail"/>
-                        <db:in-param name="paramEmail" value="#[payload.Email]"/>
-
+                        <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = #[payload.Email]]]></db:parameterized-query>
                     </db:select>
                 </enricher>
-
+            </batch:step>
+            <batch:step name="mapSalesforceUserToDatabaseUserStep">
+                <data-mapper:transform config-ref="Salesforce_User_to_db_User" doc:name="map Salesforce User to db User"/>
             </batch:step>
             <batch:step name="updateUserInDatabaseStep" filter-expression="#[recordVars['user'].size() == 0]">
                 <batch:commit size="100" doc:name="Batch Commit">
-                    <db:update config-ref="GenericDatabaseConnectorMySql" doc:name="update User in database" bulkMode="true">
+                    <db:update config-ref="GenericDatabaseConnectorMySql" bulkMode="true" doc:name="update User in database">
                         <db:parameterized-query><![CDATA[UPDATE sf_user SET 
-firstname = #[payload.FirstName], 
-lastname = #[payload.LastName], 
-salesforce_id = #[payload.Id]
-WHERE email = #[payload.Email]]]></db:parameterized-query>
-
+firstname = #[payload.firstname], 
+lastname = #[payload.lastname], 
+salesforce_id = #[payload.salesforce_id]
+WHERE email = #[payload.email]]]></db:parameterized-query>
                     </db:update>
                 </batch:commit>
             </batch:step>
             <batch:step name="insertUserInDatabaseStep" filter-expression="#[recordVars['user'].size() &gt; 0]">
                 <batch:commit size="100" doc:name="Batch Commit">
-
-                    <db:insert config-ref="GenericDatabaseConnectorMySql" doc:name="insert User in database" bulkMode="true">
+                    <db:insert config-ref="GenericDatabaseConnectorMySql" bulkMode="true" doc:name="insert User in database">
                         <db:parameterized-query><![CDATA[INSERT INTO sf_user(firstname, lastname, salesforce_id, email)
-VALUES (#[payload.FirstName], #[payload.LastName], #[payload.Id], #[payload.Email])]]></db:parameterized-query>
-
+VALUES (#[payload.firstname], #[payload.lastname], #[payload.salesforce_id], #[payload.email])]]></db:parameterized-query>
                     </db:insert>
-
                 </batch:commit>
             </batch:step>
         </batch:process-records>

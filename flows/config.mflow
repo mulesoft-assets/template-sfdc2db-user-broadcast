@@ -8,169 +8,78 @@
             <property name="local-override"/>
             <property name="system-properties-mode"/>
             <property name="file-encoding"/>
-            <property name="auxiliary;index" value="1"/>
-            <property name="ignore-unresolvable"/>
             <property name="ignore-resource-not-found"/>
+            <property name="ignore-unresolvable"/>
+            <property name="auxiliary;index" value="1"/>
         </properties>
     </global-element>
     <global-element name="Salesforce" type="http://www.mulesoft.org/schema/mule/sfdc/config" entity-id="Salesforce#1">
         <properties>
-            <property name="proxyUsername"/>
+            <property name="proxyUsername" value=""/>
             <property name="securityToken" value="${sfdc.a.securityToken}"/>
-            <property name="proxyHost"/>
-            <property name="allowFieldTruncationSupport"/>
-            <property name="auxiliary;metauseMetaData"/>
-            <property name="assignmentRuleId"/>
-            <property name="proxyPort"/>
+            <property name="proxyHost" value=""/>
+            <property name="allowFieldTruncationSupport" value="false"/>
+            <property name="auxiliary;metauseMetaData" value="true"/>
+            <property name="assignmentRuleId" value=""/>
+            <property name="proxyPort" value="80"/>
             <property name="password" value="${sfdc.a.password}"/>
-            <property name="batchSobjectMaxDepth"/>
-            <property name="clientId"/>
+            <property name="batchSobjectMaxDepth" value="5"/>
+            <property name="clientId" value=""/>
             <property name="url" value="${sfdc.a.url}"/>
             <property name="username" value="${sfdc.a.username}"/>
-            <property name="useDefaultRule"/>
-            <property name="sessionId"/>
-            <property name="serviceEndpoint"/>
+            <property name="useDefaultRule" value="false"/>
+            <property name="sessionId" value=""/>
+            <property name="updated"/>
+            <property name="serviceEndpoint" value=""/>
             <property name="name" value="SalesforceA"/>
-            <property name="timeObjectStore-ref"/>
+            <property name="timeObjectStore-ref" value=""/>
+            <property name="proxyPassword" value=""/>
             <property name="auxiliary;index" value="2"/>
-            <property name="proxyPassword"/>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/connection-pooling-profile;0">
+            <property-collection name="">
+                <property name="d" value=""/>
+                <property name="blocking" value="true"/>
+                <property name="customReconnection" value="false"/>
+                <property name="standardReconnection" value="false"/>
+                <property name="reconnectForever" value="false"/>
+                <property name="noReconnection" value="true"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/sfdc/connection-pooling-profile;1">
+                <property name="customPoolingProfile" value="true"/>
+                <property name="maxActive" value="5"/>
                 <property name="exhaustedAction" value="WHEN_EXHAUSTED_GROW"/>
+                <property name="maxIdle" value="5"/>
+                <property name="maxWait" value="5"/>
+                <property name="evictionCheckIntervalMillis" value="-1"/>
+                <property name="minEvictionMillis" value="1800000"/>
+                <property name="defaultPoolingProfile" value="false"/>
                 <property name="isProcessed$$$$ " value="true"/>
                 <property name="auxiliary;index" value="3"/>
-                <property name="auxiliary;wrapIn" value="3"/>
                 <property name="initialisationPolicy" value="INITIALISE_ONE"/>
             </property-collection>
         </properties>
         <description>One of your SalesForce instances, from this is were changes are going to be synced.</description>
     </global-element>
-    <global-element name="Template Query" type="http://www.mulesoft.org/schema/mule/db/template-query" entity-id="Template Query#1">
+    <global-element name="Generic Database Configuration" type="http://www.mulesoft.org/schema/mule/db/generic-config" entity-id="Generic Database Configuration#1">
         <properties>
-            <property name="statement"/>
-            <property name="userGeneratedSQL"/>
-            <property name="auxiliary;metatype-attribute" value="text"/>
-            <property name="name" value="QueryUserByEmail"/>
-            <property name="fromFile"/>
-            <property name="auxiliary;index" value="5"/>
-            <property name="auxiliary;metametadataStrategy" value="new-database-metadata-strategy"/>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;0">
-                <property name="name" value="paramEmail"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="7"/>
-                <property name="auxiliary;wrapIn" value="7"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-parameterized-query;0">
-                <property name="text" value="select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = ?"/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="6"/>
-                <property name="auxiliary;wrapIn" value="6"/>
-            </property-collection>
-        </properties>
-    </global-element>
-    <global-element name="Template Query" type="http://www.mulesoft.org/schema/mule/db/template-query" entity-id="Template Query#2">
-        <properties>
-            <property name="statement"/>
-            <property name="userGeneratedSQL"/>
-            <property name="auxiliary;metatype-attribute" value="text"/>
-            <property name="name" value="UpdateUser"/>
-            <property name="fromFile"/>
-            <property name="auxiliary;index" value="8"/>
-            <property name="auxiliary;metametadataStrategy" value="new-database-metadata-strategy"/>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;0">
-                <property name="name" value="firstname"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="10"/>
-                <property name="auxiliary;wrapIn" value="10"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;1">
-                <property name="name" value="lastname"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="11"/>
-                <property name="auxiliary;wrapIn" value="11"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;2">
-                <property name="name" value="salesforce_id"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="12"/>
-                <property name="auxiliary;wrapIn" value="12"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;3">
-                <property name="name" value="email"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="13"/>
-                <property name="auxiliary;wrapIn" value="13"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-parameterized-query;0">
-                <property name="text" value="UPDATE mulesoft.sf_user SET &#xA;firstname = ?, &#xA;lastname = ?, &#xA;salesforce_id = ?&#xA;WHERE email = ?"/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="9"/>
-                <property name="auxiliary;wrapIn" value="9"/>
-            </property-collection>
-        </properties>
-    </global-element>
-    <global-element name="Template Query" type="http://www.mulesoft.org/schema/mule/db/template-query" entity-id="Template Query#3">
-        <properties>
-            <property name="statement"/>
-            <property name="userGeneratedSQL"/>
-            <property name="auxiliary;metatype-attribute" value="text"/>
-            <property name="name" value="InsertUser"/>
-            <property name="fromFile"/>
-            <property name="auxiliary;index" value="14"/>
-            <property name="auxiliary;metametadataStrategy" value="new-database-metadata-strategy"/>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;0">
-                <property name="name" value="firstname"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="16"/>
-                <property name="auxiliary;wrapIn" value="16"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;1">
-                <property name="name" value="lastname"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="17"/>
-                <property name="auxiliary;wrapIn" value="17"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;2">
-                <property name="name" value="salesforce_id"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="18"/>
-                <property name="auxiliary;wrapIn" value="18"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-in-param;3">
-                <property name="name" value="email"/>
-                <property name="defaultValue" value=" "/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="19"/>
-                <property name="auxiliary;wrapIn" value="19"/>
-            </property-collection>
-            <property-collection name="@http://www.mulesoft.org/schema/mule/db/template-parameterized-query;0">
-                <property name="text" value="INSERT INTO mulesoft.sf_user(firstname, lastname, salesforce_id, email)&#xA;VALUES (?, ?, ?, ?)"/>
-                <property name="isProcessed$$$$ " value="true"/>
-                <property name="auxiliary;index" value="15"/>
-                <property name="auxiliary;wrapIn" value="15"/>
-            </property-collection>
-        </properties>
-    </global-element>
-    <global-element name="Generic Database Configuration" type="http://www.mulesoft.org/schema/mule/db/generic-config" entity-id="Generic Database Configuration#2">
-        <properties>
-            <property name="dataSource-ref"/>
+            <property name="updated"/>
             <property name="auxiliary;metauseMetaData" value="true"/>
-            <property name="springBeanConf"/>
+            <property name="springBeanConf" value="false"/>
             <property name="name" value="GenericDatabaseConnectorMySql"/>
             <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-            <property name="useXaTransactions"/>
-            <property name="databaseURLConf"/>
-            <property name="auxiliary;index" value="20"/>
+            <property name="useXaTransactions" value="false"/>
+            <property name="databaseURLConf" value="true"/>
             <property name="url" value="${database.url}"/>
+            <property name="auxiliary;index" value="19"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/db/pooling-profile;184365266">
+                <property name="maxWaitMillis" value=""/>
+                <property name="maxPoolSize" value=""/>
+                <property name="minPoolSize" value=""/>
+                <property name="preparedStatementCacheSize" value=""/>
+                <property name="acquireIncrement" value=""/>
+                <property name="isProcessed$$$$ " value="true"/>
+            </property-collection>
         </properties>
-        <description>Include jar for your database and supply correct url pointing to your database eg: 
+        <description>Include jar for your database and supply correct url pointing to your database eg: &#xD;
 jdbc:mysql://localhost:3306/database-name?user=user&amp;password=password</description>
     </global-element>
 </mule-configuration>
