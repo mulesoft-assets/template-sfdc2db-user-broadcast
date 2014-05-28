@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="test-flows.">
-    <flow SubFlow="true" name="insertUserSalesforceSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="3713e805-8213-4db4-99e3-80d6f2a87c94">
+    <flow SubFlow="true" name="insertUserSalesforceSubFlow" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="62230b1f-d87a-444b-9eed-3c6c41f79289">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -108,7 +108,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="true" name="deleteUserDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="055f41f8-d71d-4480-918a-7a45cb90df68">
+    <flow SubFlow="true" name="deleteUserDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="952912c8-ebc0-42e7-8248-dffbfa961a70">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -139,7 +139,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="true" name="selectUserFromDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="75c150c7-275d-4a2e-81ab-f00f9405f4e5">
+    <flow SubFlow="true" name="selectUserFromDB" type="http://www.mulesoft.org/schema/mule/core/subflow" entity-id="ed60dd26-7322-4c51-b241-0b8178bbb6ce">
         <properties>
             <property name="initialState"/>
             <property name="processingStrategy2"/>
@@ -148,27 +148,30 @@
             <property name="tracking:enable-default-events"/>
             <property name="auxiliary;index" value="19"/>
         </properties>
+        <description></description>
         <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#3">
             <graphicalData x="0" y="0" width="0" height="0"/>
             <pattern name="query User from db" type="http://www.mulesoft.org/schema/mule/db/database-connector" entity-id="Database#2">
                 <graphicalData x="0" y="0" width="0" height="0"/>
                 <properties>
-                    <property name="streaming"/>
-                    <property name=""/>
-                    <property name="fetchSize"/>
-                    <property name="source"/>
-                    <property name="transactionalAction"/>
-                    <property name="target"/>
-                    <property name="maxRows"/>
+                    <property name="streaming" value="false"/>
+                    <property name="fetchSize" value=""/>
+                    <property name="auxiliary;erased;fetchSize" value="true"/>
+                    <property name="source" value=""/>
+                    <property name="updated"/>
+                    <property name="transactionalAction" value="JOIN_IF_POSSIBLE"/>
                     <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/db/select"/>
+                    <property name="target" value=""/>
+                    <property name="auxiliary;erased;maxRows" value="true"/>
+                    <property name="maxRows" value=""/>
                     <property name="config-ref" value="GenericDatabaseConnectorMySql"/>
                     <property name="auxiliary;index" value="20"/>
+                    <property name="auxiliary;metametadataStrategy" value="new-database-metadata-strategy"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/db/parameterized-query;0">
-                        <property name="text" value="select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = #[payload['Email']]"/>
-                        <property name="auxiliary;index" value="21"/>
-                        <property name="auxiliary;wrapIn" value="21"/>
+                        <property name="text" value="select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = #[payload.Email]"/>
                     </property-collection>
                 </properties>
+                <description></description>
             </pattern>
         </lane>
     </flow>

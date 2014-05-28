@@ -120,7 +120,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	private Map<String, Object> createSalesforceUser() {
 		final String name = "tst" + buildUniqueName(5);
 		final String uniqueEmail = buildUniqueEmail(name);
-
+		System.err.println(name);
 		SfdcObjectBuilder builder = new SfdcObjectBuilder();
 		final Map<String, Object> user = builder
 				.with("Email", uniqueEmail)
@@ -136,7 +136,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 				.with("TimeZoneSidKey", "America/New_York")
 
 				// id of the chatter external user profile
-				.with("ProfileId", "00ed0000000GO9T")
+				.with("ProfileId", "00e80000001C9I0")
 				.with("EmailEncodingKey", "ISO-8859-1").build();
 		return user;
 	}

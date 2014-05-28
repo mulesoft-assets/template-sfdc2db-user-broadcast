@@ -24,13 +24,13 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
         </sfdc:upsert>
     </sub-flow>
     <sub-flow name="deleteUserDB" doc:name="deleteUserDB">
-        <db:delete  doc:name="delete User from db" config-ref="GenericDatabaseConnectorMySql">
+        <db:delete config-ref="GenericDatabaseConnectorMySql" doc:name="delete User from db">
             <db:dynamic-query><![CDATA[delete from sf_user where email = '#[payload.email]']]></db:dynamic-query>
         </db:delete>
     </sub-flow>
     <sub-flow name="selectUserFromDB" doc:name="selectUserFromDB">
         <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="query User from db">
-            <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = #[payload['Email']]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = #[payload.Email]]]></db:parameterized-query>
         </db:select>
     </sub-flow>
 </mule>
