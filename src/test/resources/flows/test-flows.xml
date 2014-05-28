@@ -30,7 +30,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
     </sub-flow>
     <sub-flow name="selectUserFromDB" doc:name="selectUserFromDB">
         <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="query User from db">
-            <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = #[payload.Email]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from sf_user where email = #[payload.Email]]]></db:parameterized-query>
         </db:select>
     </sub-flow>
 </mule>

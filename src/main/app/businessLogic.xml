@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
             <batch:step name="checkUserInDatabaseStep">
                 <enricher source="#[payload]" target="#[recordVars.user]" doc:name="Store payload into variable 'user'">
                     <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="query User by matching email from Database">
-                        <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from mulesoft.sf_user where email = #[payload.Email]]]></db:parameterized-query>
+                        <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from sf_user where email = #[payload.Email]]]></db:parameterized-query>
                     </db:select>
                 </enricher>
             </batch:step>
