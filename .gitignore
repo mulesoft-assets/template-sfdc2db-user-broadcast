@@ -46,6 +46,10 @@ local.properties
 flows/
 target/
 **/*.mflow
+**.mflow
+
+syntax: regexp
+^\flows$
 
 # --------------- #
 # Mule-specific #
