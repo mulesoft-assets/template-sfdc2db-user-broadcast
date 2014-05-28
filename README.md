@@ -77,7 +77,7 @@ CREATE TABLE `sf_user` (
   PRIMARY KEY (`id`)
 )
 </pre>
-+ Optionally customize query templates in `config.mflow` if they don't match sql grammar of database of your choice
++ Optionally customize query templates in `config.xml` if they don't match sql grammar of database of your choice
 
 ## Running on CloudHub <a name="runoncloudhub"/>
 
