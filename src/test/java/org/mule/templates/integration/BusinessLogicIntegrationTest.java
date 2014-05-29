@@ -1,11 +1,20 @@
 package org.mule.templates.integration;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,24 +34,31 @@ import com.mulesoft.module.batch.BatchTestHelper;
 public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 	protected static final int TIMEOUT = 60;
-	private static final Logger log = Logger.getLogger(BusinessLogicIntegrationTest.class);
-	private static final String POLL_FLOW_NAME = "triggerFlow";
+	private static final String DATABASE_NAME = "SFDC2DBUserBroadcast" + new Long(new Date().getTime()).toString();
 	private BatchTestHelper helper;
 	private Map<String, Object> user = null;
 
+
+	
 	@BeforeClass
 	public static void init() {
 		System.setProperty("page.size", "1000");
 		System.setProperty("poll.frequencyMillis", "10000");
 		System.setProperty("poll.startDelayMillis", "20000");
-		System.setProperty("watermark.default.expression",
-				"#[groovy: new Date(System.currentTimeMillis() - 10000).format(\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\", TimeZone.getTimeZone('UTC'))]");
+		System.setProperty("watermark.default.expression", "#[groovy: new Date(System.currentTimeMillis() - 10000).format(\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\", TimeZone.getTimeZone('UTC'))]");
+		System.setProperty("database.url", "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/"+DATABASE_NAME+"?rewriteBatchedStatements=true&password=PMmulebells&user=iappsandbox");
+		
 	}
 
 	@Before
 	public void setUp() throws Exception {
+		
+		setUpDatabase();
+		
 		stopFlowSchedulers(POLL_FLOW_NAME);
+		
 		registerListeners();
+		
 		helper = new BatchTestHelper(muleContext);
 
 		// prepare test data
@@ -50,8 +66,53 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		insertUserSalesforce(user);
 	}
 
+	private void setUpDatabase() {
+		
+		System.out.println("******************************** Populate MySQL DB **************************");
+		String dbURL = "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/?user=iappsandbox&password=PMmulebells";
+		Connection conn = null;
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			// Get a connection
+			conn = DriverManager.getConnection(dbURL);
+			Statement stmt = conn.createStatement();
+			FileInputStream fstream = new FileInputStream("src/main/resources/user.sql");
+			DataInputStream in = new DataInputStream(fstream);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+			stmt.addBatch("CREATE DATABASE "+DATABASE_NAME);
+			stmt.addBatch("USE "+DATABASE_NAME);
+
+			String strLine;
+			StringBuffer createStatement = new StringBuffer();
+			// Specify delimiter according to sql file
+			while ((strLine = br.readLine()) != null) {
+				if (strLine.length() > 0) {
+					strLine.replace("\n", "");
+					createStatement.append(strLine);
+				}
+			}
+			stmt.addBatch(createStatement.toString());
+			in.close();
+		
+			stmt.executeBatch();
+			
+		} catch (SQLException ex) {
+		    // handle any errors
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (Exception except) {
+			except.printStackTrace();
+		}
+	
+	}
+	
 	@After
 	public void tearDown() throws Exception {
+		
+		
 		stopFlowSchedulers(POLL_FLOW_NAME);
 		// delete user from Salesforce
 		// user could at least be flagged as inactive
@@ -60,8 +121,32 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		Map<String, Object> usr = new HashMap<String, Object>();
 		usr.put("email", user.get("Email"));
 		deleteUserFromDB(usr);
+
+		tearDownDataBase();
+		
 	}
 
+	private void tearDownDataBase() {
+		
+		System.out
+		.println("******************************** Delete Tables from MySQL DB **************************");
+		String dbURL = "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/?user=iappsandbox&password=PMmulebells";
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+		
+			// Get a connection
+			conn = DriverManager.getConnection(dbURL);
+		
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate("DROP SCHEMA "+DATABASE_NAME);
+		} catch (Exception except) {
+			except.printStackTrace();
+		}
+
+		
+	}
+	
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testMainFlow() throws Exception {
@@ -77,7 +162,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		final String email = (String) user.get("Email");
 		final Map<String, Object> userToRetrieveMail = new HashMap<String, Object>();
 		userToRetrieveMail.put("Email", email);
-		log.info("userToRetrieveMail: " + userToRetrieveMail);
+//		log.info("userToRetrieveMail: " + userToRetrieveMail);
 
 		// Execute selectUserFromDB sublow
 		SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow = getSubFlow("selectUserFromDB");
@@ -85,8 +170,8 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		final List<Map<String, Object>> payload = (List<Map<String, Object>>) event.getMessage().getPayload();
 
 		// print result
-		for (Map<String, Object> usr : payload)
-			log.info("selectUserFromDB response: " + usr);
+//		for (Map<String, Object> usr : payload)
+//			log.info("selectUserFromDB response: " + usr);
 
 		// User previously created in Salesforce should be present in database
 		Assert.assertEquals("The user should have been sync", 1, payload.size());
@@ -103,7 +188,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 		// store Id into our user
 		for (EnrichedUpsertResult item : result) {
-			log.info("response from insertUserSalesforceSubFlow: " + item);
+//			log.info("response from insertUserSalesforceSubFlow: " + item);
 			user.put("Id", item.getId());
 		}
 	}
@@ -114,7 +199,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 		MuleEvent event = flow.process(getTestEvent(user, MessageExchangePattern.REQUEST_RESPONSE));
 		Object result = event.getMessage().getPayload();
-		log.info("deleteUserDB result: " + result);
+//		log.info("deleteUserDB result: " + result);
 	}
 
 	private Map<String, Object> createSalesforceUser() {
