@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.RandomStringUtils;
-//import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,7 +34,10 @@ import com.mulesoft.module.batch.BatchTestHelper;
 public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 	protected static final int TIMEOUT = 60;
+	private static final Logger log = Logger.getLogger(BusinessLogicIntegrationTest.class);
 	private static final String DATABASE_NAME = "SFDC2DBUserBroadcast" + new Long(new Date().getTime()).toString();
+	private static final String DATABASE_URL = "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/?user=iappsandbox&password=PMmulebells";
+	private static final String TABLES_SQL_FILE = "src/main/resources/user.sql";
 	private BatchTestHelper helper;
 	private Map<String, Object> user = null;
 
@@ -69,15 +72,15 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	private void setUpDatabase() {
 		
 		System.out.println("******************************** Populate MySQL DB **************************");
-		String dbURL = "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/?user=iappsandbox&password=PMmulebells";
 		Connection conn = null;
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			
 			// Get a connection
-			conn = DriverManager.getConnection(dbURL);
+			conn = DriverManager.getConnection(DATABASE_URL);
 			Statement stmt = conn.createStatement();
-			FileInputStream fstream = new FileInputStream("src/main/resources/user.sql");
+			FileInputStream fstream = new FileInputStream(TABLES_SQL_FILE);
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
@@ -162,7 +165,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		final String email = (String) user.get("Email");
 		final Map<String, Object> userToRetrieveMail = new HashMap<String, Object>();
 		userToRetrieveMail.put("Email", email);
-//		log.info("userToRetrieveMail: " + userToRetrieveMail);
+		log.info("userToRetrieveMail: " + userToRetrieveMail);
 
 		// Execute selectUserFromDB sublow
 		SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow = getSubFlow("selectUserFromDB");
@@ -170,8 +173,8 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		final List<Map<String, Object>> payload = (List<Map<String, Object>>) event.getMessage().getPayload();
 
 		// print result
-//		for (Map<String, Object> usr : payload)
-//			log.info("selectUserFromDB response: " + usr);
+		for (Map<String, Object> usr : payload)
+			log.info("selectUserFromDB response: " + usr);
 
 		// User previously created in Salesforce should be present in database
 		Assert.assertEquals("The user should have been sync", 1, payload.size());
@@ -188,7 +191,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 		// store Id into our user
 		for (EnrichedUpsertResult item : result) {
-//			log.info("response from insertUserSalesforceSubFlow: " + item);
+			log.info("response from insertUserSalesforceSubFlow: " + item);
 			user.put("Id", item.getId());
 		}
 	}
@@ -199,7 +202,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 		MuleEvent event = flow.process(getTestEvent(user, MessageExchangePattern.REQUEST_RESPONSE));
 		Object result = event.getMessage().getPayload();
-//		log.info("deleteUserDB result: " + result);
+		log.info("deleteUserDB result: " + result);
 	}
 
 	private Map<String, Object> createSalesforceUser() {
