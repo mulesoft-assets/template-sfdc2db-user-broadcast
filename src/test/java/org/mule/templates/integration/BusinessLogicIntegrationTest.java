@@ -89,14 +89,17 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 			String strLine;
 			StringBuffer createStatement = new StringBuffer();
-			// Specify delimiter according to sql file
+
 			while ((strLine = br.readLine()) != null) {
 				if (strLine.length() > 0) {
 					strLine.replace("\n", "");
 					createStatement.append(strLine);
 				}
+				if (strLine.contains(";")) {
+					stmt.addBatch(createStatement.toString());
+					createStatement = new StringBuffer();
+				}
 			}
-			stmt.addBatch(createStatement.toString());
 			in.close();
 		
 			stmt.executeBatch();
