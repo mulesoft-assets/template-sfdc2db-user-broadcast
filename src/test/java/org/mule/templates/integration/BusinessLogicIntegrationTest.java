@@ -25,8 +25,10 @@ import org.mule.api.MuleEvent;
 import org.mule.modules.salesforce.bulk.EnrichedUpsertResult;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.templates.builders.SfdcObjectBuilder;
+import org.mule.templates.db.MySQLDbCreator;
 
 import com.mulesoft.module.batch.BatchTestHelper;
+import com.sforce.soap.partner.SaveResult;
 
 /**
  * The objective of this class is to validate the correct behavior of the flows for this Mule Template that make calls to external systems.
@@ -35,13 +37,13 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 	protected static final int TIMEOUT = 60;
 	private static final Logger log = Logger.getLogger(BusinessLogicIntegrationTest.class);
-	private static final String DATABASE_NAME = "SFDC2DBUserBroadcast" + new Long(new Date().getTime()).toString();
-	private static final String DATABASE_URL = "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/?user=iappsandbox&password=PMmulebells";
-	private static final String TABLES_SQL_FILE = "src/main/resources/user.sql";
 	private BatchTestHelper helper;
 	private Map<String, Object> user = null;
 
-
+	private static final String PATH_TO_TEST_PROPERTIES = "./src/test/resources/mule.test.properties";
+	private static final String PATH_TO_SQL_SCRIPT = "src/main/resources/user.sql";
+	private static final String DATABASE_NAME = "SFDC2DBUserBroadcast" + new Long(new Date().getTime()).toString();
+	private static final MySQLDbCreator DBCREATOR = new MySQLDbCreator(DATABASE_NAME, PATH_TO_SQL_SCRIPT, PATH_TO_TEST_PROPERTIES);
 	
 	@BeforeClass
 	public static void init() {
@@ -49,19 +51,15 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		System.setProperty("poll.frequencyMillis", "10000");
 		System.setProperty("poll.startDelayMillis", "20000");
 		System.setProperty("watermark.default.expression", "#[groovy: new Date(System.currentTimeMillis() - 10000).format(\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\", TimeZone.getTimeZone('UTC'))]");
-		System.setProperty("database.url", "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/"+DATABASE_NAME+"?rewriteBatchedStatements=true&password=PMmulebells&user=iappsandbox");
 		
+		System.setProperty("database.url", DBCREATOR.getDatabaseUrlWithName());
+		DBCREATOR.setUpDatabase();
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		
-		setUpDatabase();
-		
 		stopFlowSchedulers(POLL_FLOW_NAME);
-		
 		registerListeners();
-		
 		helper = new BatchTestHelper(muleContext);
 
 		// prepare test data
@@ -69,51 +67,6 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		insertUserSalesforce(user);
 	}
 
-	private void setUpDatabase() {
-		
-		System.out.println("******************************** Populate MySQL DB **************************");
-		Connection conn = null;
-		
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			
-			// Get a connection
-			conn = DriverManager.getConnection(DATABASE_URL);
-			Statement stmt = conn.createStatement();
-			FileInputStream fstream = new FileInputStream(TABLES_SQL_FILE);
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-			stmt.addBatch("CREATE DATABASE "+DATABASE_NAME);
-			stmt.addBatch("USE "+DATABASE_NAME);
-
-			String strLine;
-			StringBuffer createStatement = new StringBuffer();
-
-			while ((strLine = br.readLine()) != null) {
-				if (strLine.length() > 0) {
-					strLine.replace("\n", "");
-					createStatement.append(strLine);
-				}
-				if (strLine.contains(";")) {
-					stmt.addBatch(createStatement.toString());
-					createStatement = new StringBuffer();
-				}
-			}
-			in.close();
-		
-			stmt.executeBatch();
-			
-		} catch (SQLException ex) {
-		    // handle any errors
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		} catch (Exception except) {
-			except.printStackTrace();
-		}
-	
-	}
 	
 	@After
 	public void tearDown() throws Exception {
@@ -128,31 +81,9 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		usr.put("email", user.get("Email"));
 		deleteUserFromDB(usr);
 
-		tearDownDataBase();
-		
+		DBCREATOR.tearDownDataBase();
 	}
 
-	private void tearDownDataBase() {
-		
-		System.out
-		.println("******************************** Delete Tables from MySQL DB **************************");
-		String dbURL = "jdbc:mysql://iappsandbox.cbbmvnwhlhi8.us-east-1.rds.amazonaws.com:3306/?user=iappsandbox&password=PMmulebells";
-		Connection conn = null;
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-		
-			// Get a connection
-			conn = DriverManager.getConnection(dbURL);
-		
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("DROP SCHEMA "+DATABASE_NAME);
-		} catch (Exception except) {
-			except.printStackTrace();
-		}
-
-		
-	}
-	
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testMainFlow() throws Exception {
@@ -165,14 +96,14 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		helper.assertJobWasSuccessful();
 
 		// Prepare payload
-		final String email = (String) user.get("Email");
-		final Map<String, Object> userToRetrieveMail = new HashMap<String, Object>();
-		userToRetrieveMail.put("Email", email);
-		log.info("userToRetrieveMail: " + userToRetrieveMail);
+		final String lastName = (String) user.get("LastName");
+		final Map<String, Object> userToRetrieveLastName = new HashMap<String, Object>();
+		userToRetrieveLastName.put("LastName", lastName);
+		log.info("userToRetrieveLastName: " + userToRetrieveLastName);
 
 		// Execute selectUserFromDB sublow
 		SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow = getSubFlow("selectUserFromDB");
-		final MuleEvent event = selectUserFromDBFlow.process(getTestEvent(userToRetrieveMail, MessageExchangePattern.REQUEST_RESPONSE));
+		final MuleEvent event = selectUserFromDBFlow.process(getTestEvent(userToRetrieveLastName, MessageExchangePattern.REQUEST_RESPONSE));
 		final List<Map<String, Object>> payload = (List<Map<String, Object>>) event.getMessage().getPayload();
 
 		// print result
@@ -181,22 +112,19 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 		// User previously created in Salesforce should be present in database
 		Assert.assertEquals("The user should have been sync", 1, payload.size());
-		Assert.assertEquals("The user email should match", email, payload.get(0).get("email"));
+		Assert.assertEquals("The user email should match", lastName, payload.get(0).get("lastname"));
 	}
 
-	@SuppressWarnings("unchecked")
 	private void insertUserSalesforce(Map<String, Object> user) throws Exception {
-		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("insertUserSalesforceSubFlow");
+		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("updateUserSalesforceSubFlow");
 		flow.initialise();
 
 		final MuleEvent event = flow.process(getTestEvent(user, MessageExchangePattern.REQUEST_RESPONSE));
-		final List<EnrichedUpsertResult> result = (List<EnrichedUpsertResult>) event.getMessage().getPayload();
+		final SaveResult result = (SaveResult) event.getMessage().getPayload();
 
 		// store Id into our user
-		for (EnrichedUpsertResult item : result) {
-			log.info("response from insertUserSalesforceSubFlow: " + item);
-			user.put("Id", item.getId());
-		}
+		log.info("response from updateUserSalesforceSubFlow: " + result);
+		user.put("Id", result.getId());
 	}
 
 	private void deleteUserFromDB(Map<String, Object> user) throws Exception {
@@ -209,26 +137,14 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	}
 
 	private Map<String, Object> createSalesforceUser() {
-		final String name = "tst" + buildUniqueName(5);
-		final String uniqueEmail = buildUniqueEmail(name);
+		final String name = "tst" + new Long(new Date().getTime()).toString();
 		System.err.println(name);
 		SfdcObjectBuilder builder = new SfdcObjectBuilder();
 		final Map<String, Object> user = builder
-				.with("Email", uniqueEmail)
-				.with("UserName", uniqueEmail)
+				.with("Id", "005n0000000UapkAAC")
 				.with("LastName", name)
 				.with("FirstName", name)
-				.with("Alias", name)
-				.with("CommunityNickname", name)
-
-				// hardcoded defaults
-				.with("LocaleSidKey", "en_US")
-				.with("LanguageLocaleKey", "en_US")
-				.with("TimeZoneSidKey", "America/New_York")
-
-				// id of the chatter external user profile
-				.with("ProfileId", "00e80000001C9I0")
-				.with("EmailEncodingKey", "ISO-8859-1").build();
+				.build();
 		return user;
 	}
 
