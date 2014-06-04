@@ -124,8 +124,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	}
 
 	private Map<String, Object> createSalesforceUser() {
-		final String name = "tst" + new Long(new Date().getTime()).toString();
-		System.err.println(name);
+		final String name = "test";
 		SfdcObjectBuilder builder = new SfdcObjectBuilder();
 		
 		// updating existing one rather than creating new one because it cannot be deleted
