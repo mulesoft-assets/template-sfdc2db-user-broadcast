@@ -60,15 +60,11 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	
 	@After
 	public void tearDown() throws Exception {
-		
-		
 		stopFlowSchedulers(POLL_FLOW_NAME);
-		// delete user from Salesforce
-		// user could at least be flagged as inactive
 
 		// delete previously created user from db with matching email
 		Map<String, Object> usr = new HashMap<String, Object>();
-		usr.put("email", user.get("Email"));
+		usr.put("lastname", user.get("LastName"));
 		deleteUserFromDB(usr);
 
 		DBCREATOR.tearDownDataBase();
@@ -130,6 +126,8 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		final String name = "tst" + new Long(new Date().getTime()).toString();
 		System.err.println(name);
 		SfdcObjectBuilder builder = new SfdcObjectBuilder();
+		
+		// updating existing one rather than creating new one because it cannot be deleted
 		final Map<String, Object> user = builder
 				.with("Id", "005n0000000UapkAAC")
 				.with("LastName", name)
