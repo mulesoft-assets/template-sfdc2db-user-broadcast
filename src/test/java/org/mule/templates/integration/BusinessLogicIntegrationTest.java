@@ -1,19 +1,10 @@
 package org.mule.templates.integration;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -22,7 +13,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
-import org.mule.modules.salesforce.bulk.EnrichedUpsertResult;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.templates.builders.SfdcObjectBuilder;
 import org.mule.templates.db.MySQLDbCreator;
@@ -148,7 +138,4 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		return user;
 	}
 
-	private String buildUniqueName(int len) {
-		return RandomStringUtils.randomAlphabetic(len).toLowerCase();
-	}
 }
