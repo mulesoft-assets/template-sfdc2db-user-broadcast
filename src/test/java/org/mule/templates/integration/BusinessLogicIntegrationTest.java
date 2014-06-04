@@ -85,7 +85,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		final String lastName = (String) user.get("LastName");
 		final Map<String, Object> userToRetrieveLastName = new HashMap<String, Object>();
 		userToRetrieveLastName.put("LastName", lastName);
-		log.info("userToRetrieveLastName: " + userToRetrieveLastName);
+		log.error("userToRetrieveLastName: " + userToRetrieveLastName);
 
 		// Execute selectUserFromDB sublow
 		SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow = getSubFlow("selectUserFromDB");
@@ -94,9 +94,10 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 		// print result
 		for (Map<String, Object> usr : payload)
-			log.info("selectUserFromDB response: " + usr);
+			log.error("selectUserFromDB response: " + usr);
 
 		// User previously created in Salesforce should be present in database
+		log.error("before assert" + payload);
 		Assert.assertEquals("The user should have been sync", 1, payload.size());
 		Assert.assertEquals("The user email should match", lastName, payload.get(0).get("lastname"));
 	}
