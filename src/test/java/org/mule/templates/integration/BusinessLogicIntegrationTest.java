@@ -1,11 +1,14 @@
 package org.mule.templates.integration;
 
+import java.io.FileInputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.JCEIESCipher.ECIES;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,6 +32,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	private static final Logger log = Logger.getLogger(BusinessLogicIntegrationTest.class);
 	private BatchTestHelper helper;
 	private Map<String, Object> user = null;
+	private String existingUser = null;
 
 	private static final String PATH_TO_TEST_PROPERTIES = "./src/test/resources/mule.test.properties";
 	private static final String PATH_TO_SQL_SCRIPT = "src/main/resources/user.sql";
@@ -48,6 +52,15 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 
 	@Before
 	public void setUp() throws Exception {
+		final Properties props = new Properties();
+		try {
+			props.load(new FileInputStream(PATH_TO_TEST_PROPERTIES));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		existingUser = props.getProperty("sfdc.user.id");
+		System.err.println(existingUser);
+
 		stopFlowSchedulers(POLL_FLOW_NAME);
 		registerListeners();
 		helper = new BatchTestHelper(muleContext);
@@ -55,6 +68,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		// prepare test data
 		user = createSalesforceUser();
 		insertUserSalesforce(user);
+		
 	}
 
 	
@@ -129,7 +143,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		
 		// updating existing one rather than creating new one because it cannot be deleted
 		final Map<String, Object> user = builder
-				.with("Id", "005n0000000UapkAAC")
+				.with("Id", existingUser)
 				.with("LastName", name)
 				.with("FirstName", name)
 				.build();
