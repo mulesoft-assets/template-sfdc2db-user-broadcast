@@ -5,7 +5,7 @@
 	</placeholders>
 	<sections>
 		<section id="use_case">
-As a Salesforce admin I want to syncronize Users between Salesfoce org and database.
+As a Salesforce admin I want to synchronize Users between Salesfoce org and database.
 
 This Template should serve as a foundation for setting an online sync of Users from one SalesForce instance to database. Everytime there is a new User or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the User on the target database table.
 
@@ -18,7 +18,7 @@ The batch job is divided in Input, Process and On Complete stages.
 The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest SalesForce updates/creations matching a filter criteria and executing the batch job.
 During the Process stage, each SFDC User will be filtered depending on, if it has an existing matching user in the database
 The last step of the Process stage will group the users and insert/update them in database.
-Finally during the On Complete stage the Template will logoutput statistics data into the console.
+Finally during the On Complete stage the Template will log output statistics data into the console.
 		</section>
 		<section id="considerations">
 <![CDATA[
