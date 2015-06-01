@@ -34,8 +34,9 @@ import com.sforce.soap.partner.SaveResult;
  */
 public class BusinessLogicIT extends AbstractTemplateTestCase {
 
+	private static final Logger LOG = Logger.getLogger(BusinessLogicIT.class);
+	
 	protected static final int TIMEOUT = 60;
-	private static final Logger log = Logger.getLogger(BusinessLogicIT.class);
 	private BatchTestHelper helper;
 	private Map<String, Object> user = null;
 	private String existingUser = null;
@@ -65,7 +66,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 			e.printStackTrace();
 		}
 		existingUser = props.getProperty("sfdc.user.id");
-		System.err.println(existingUser);
+		LOG.info("Existing user: " + existingUser);
 
 		stopFlowSchedulers(POLL_FLOW_NAME);
 		registerListeners();
@@ -105,47 +106,47 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		final String lastName = (String) user.get("LastName");
 		final Map<String, Object> userToRetrieveLastName = new HashMap<String, Object>();
 		userToRetrieveLastName.put("LastName", lastName);
-		log.error("userToRetrieveLastName: " + userToRetrieveLastName);
+		LOG.info("UserToRetrieveLastName: " + userToRetrieveLastName);
 
 		// Execute selectUserFromDB sublow
-		SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow = getSubFlow("selectUserFromDB");
+		final SubflowInterceptingChainLifecycleWrapper selectUserFromDBFlow = getSubFlow("selectUserFromDB");
 		final MuleEvent event = selectUserFromDBFlow.process(getTestEvent(userToRetrieveLastName, MessageExchangePattern.REQUEST_RESPONSE));
 		final List<Map<String, Object>> payload = (List<Map<String, Object>>) event.getMessage().getPayload();
 
 		// print result
-		for (Map<String, Object> usr : payload)
-			log.error("selectUserFromDB response: " + usr);
+		for (final Map<String, Object> usr : payload)
+			LOG.info("SelectUserFromDB response: " + usr);
 
 		// User previously created in Salesforce should be present in database
-		log.error("before assert" + payload);
+		LOG.info("Before assert" + payload);
 		Assert.assertEquals("The user should have been sync", 1, payload.size());
 		Assert.assertEquals("The user email should match", lastName, payload.get(0).get("lastname"));
 	}
 
 	private void insertUserSalesforce(Map<String, Object> user) throws Exception {
-		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("updateUserSalesforceSubFlow");
+		final SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("updateUserSalesforceSubFlow");
 		flow.initialise();
 
 		final MuleEvent event = flow.process(getTestEvent(user, MessageExchangePattern.REQUEST_RESPONSE));
 		final SaveResult result = (SaveResult) event.getMessage().getPayload();
 
 		// store Id into our user
-		log.info("response from updateUserSalesforceSubFlow: " + result);
+		LOG.info("Response from updateUserSalesforceSubFlow: " + result);
 		user.put("Id", result.getId());
 	}
 
 	private void deleteUserFromDB(Map<String, Object> user) throws Exception {
-		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("deleteUserDB");
+		final SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("deleteUserDB");
 		flow.initialise();
 
-		MuleEvent event = flow.process(getTestEvent(user, MessageExchangePattern.REQUEST_RESPONSE));
-		Object result = event.getMessage().getPayload();
-		log.info("deleteUserDB result: " + result);
+		final MuleEvent event = flow.process(getTestEvent(user, MessageExchangePattern.REQUEST_RESPONSE));
+		final Object result = event.getMessage().getPayload();
+		LOG.info("DeleteUserDB result: " + result);
 	}
 
 	private Map<String, Object> createSalesforceUser() {
 		final String name = "test";
-		SfdcObjectBuilder builder = new SfdcObjectBuilder();
+		final SfdcObjectBuilder builder = new SfdcObjectBuilder();
 		
 		// updating existing one rather than creating new one because it cannot be deleted
 		final Map<String, Object> user = builder

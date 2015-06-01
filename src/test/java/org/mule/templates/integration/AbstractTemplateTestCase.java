@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.junit.Rule;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
@@ -27,6 +28,7 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Prober;
 import org.mule.templates.builders.SfdcObjectBuilder;
+import org.mule.templates.db.MySQLDbCreator;
 import org.mule.templates.test.utils.ListenerProbe;
 import org.mule.templates.test.utils.PipelineSynchronizeListener;
 import org.mule.transport.NullPayload;
@@ -36,6 +38,9 @@ import org.mule.transport.NullPayload;
  * @author damiansima
  */
 public abstract class AbstractTemplateTestCase extends FunctionalTestCase {
+	
+	private static final Logger LOG = Logger.getLogger(AbstractTemplateTestCase.class);
+	
 	private static final String MAPPINGS_FOLDER_PATH = "./mappings";
 	private static final String TEST_FLOWS_FOLDER_PATH = "./src/test/resources/flows/";
 	private static final String MULE_DEPLOY_PROPERTIES_PATH = "./src/main/app/mule-deploy.properties";
@@ -105,9 +110,9 @@ public abstract class AbstractTemplateTestCase extends FunctionalTestCase {
 	}
 
 	protected void waitForPollToRun() {
-		System.out.println("Waiting for poll to run ones...");
+		LOG.info("Waiting for poll to run ones...");
 		pollProber.check(new ListenerProbe(pipelineListener));
-		System.out.println("Poll flow done");
+		LOG.info("Poll flow done");
 	}
 
 	@SuppressWarnings("unchecked")
