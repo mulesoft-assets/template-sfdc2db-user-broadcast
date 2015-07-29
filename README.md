@@ -28,7 +28,7 @@ Please review the terms of the license before downloading and using this templat
 # Use Case <a name="usecase"/>
 As a Salesforce admin I want to synchronize Users between Salesfoce org and database.
 
-This Template should serve as a foundation for setting an online sync of Users from one SalesForce instance to database. Everytime there is a new User or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the User on the target database table.
+This Template should serve as a foundation for setting an online sync of Users from one SalesForce instance to database. Every time there is a new User or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the User on the target database table.
 
 What about Passwords? When the User is updated in the target instance, the password is not changed and therefore there is nothing to concern about in this case. Password set in case of User creation is not being covered by this template considering that many different approaches can be selected.
 
