@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.6.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-    <sub-flow name="updateUserSalesforceSubFlow" doc:name="updateUserSalesforceSubFlow">
+    <sub-flow name="updateUserSalesforceSubFlow" >
         <sfdc:update-single config-ref="SalesforceA"  type="User" doc:name="Update User in SalesforceA">
             <sfdc:object ref="#[payload]"/>
 
         </sfdc:update-single>
-        <logger message="#[payload]" level="INFO" doc:name="log response"/>
+        <logger message="#[payload]" level="INFO" doc:name="Log response"/>
     </sub-flow>
-    <sub-flow name="deleteUserDB" doc:name="deleteUserDB">
-        <db:delete config-ref="GenericDatabaseConnectorMySql" doc:name="delete User from db">
+    <sub-flow name="deleteUserDB" >
+        <db:delete config-ref="GenericDatabaseConnectorMySql" doc:name="Delete User from db">
             <db:dynamic-query><![CDATA[delete from sf_user where email = '#[payload.email]']]></db:dynamic-query>
+
         </db:delete>
     </sub-flow>
-    <sub-flow name="selectUserFromDB" doc:name="selectUserFromDB">
-        <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="query User from db">
+    <sub-flow name="selectUserFromDB" >
+        <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="Query User from db">
             <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from sf_user where lastname = #[payload.LastName]]]></db:parameterized-query>
+
 
         </db:select>
     </sub-flow>

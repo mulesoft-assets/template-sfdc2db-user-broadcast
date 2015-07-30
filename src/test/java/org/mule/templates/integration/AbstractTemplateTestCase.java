@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Rule;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
@@ -28,7 +29,6 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Prober;
 import org.mule.templates.builders.SfdcObjectBuilder;
-import org.mule.templates.db.MySQLDbCreator;
 import org.mule.templates.test.utils.ListenerProbe;
 import org.mule.templates.test.utils.PipelineSynchronizeListener;
 import org.mule.transport.NullPayload;
@@ -39,7 +39,7 @@ import org.mule.transport.NullPayload;
  */
 public abstract class AbstractTemplateTestCase extends FunctionalTestCase {
 	
-	private static final Logger LOG = Logger.getLogger(AbstractTemplateTestCase.class);
+	private static final Logger LOG = LogManager.getLogger(AbstractTemplateTestCase.class);
 	
 	private static final String MAPPINGS_FOLDER_PATH = "./mappings";
 	private static final String TEST_FLOWS_FOLDER_PATH = "./src/test/resources/flows/";

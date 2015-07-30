@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.JCEIESCipher.ECIES;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,7 +34,7 @@ import com.sforce.soap.partner.SaveResult;
  */
 public class BusinessLogicIT extends AbstractTemplateTestCase {
 
-	private static final Logger LOG = Logger.getLogger(BusinessLogicIT.class);
+	private static final Logger LOG = LogManager.getLogger(BusinessLogicIT.class);
 	
 	protected static final int TIMEOUT = 60;
 	private BatchTestHelper helper;
