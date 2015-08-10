@@ -7,7 +7,7 @@ xmlns:json="http://www.mulesoft.org/schema/mule/json"
 xmlns:db="http://www.mulesoft.org/schema/mule/db" 
 xmlns:batch="http://www.mulesoft.org/schema/mule/batch" 
 xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" 
-version="EE-3.7.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+version="EE-3.7.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -23,24 +23,12 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
                         <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from sf_user where email = #[payload.Email]]]></db:parameterized-query>
 
 
+
                     </db:select>
                 </enricher>
             </batch:step>
-            <batch:step name="mapSalesforceUserToDatabaseUserStep">
-                <dw:transform-message doc:name="Transform Salesforce User to db User">
-                    <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
----
-{
-	email: payload.Email,
-	firstname: payload.FirstName,
-	salesforce_id: payload.Id,
-	lastname: payload.LastName
-}]]></dw:set-payload>
-                </dw:transform-message>
 
-            </batch:step>
-            <batch:step name="updateUserInDatabaseStep" filter-expression="#[recordVars['user'].size() == 0]">
+            <batch:step name="updateUserInDatabaseStep" accept-expression="#[recordVars['user'].size() != 0]">
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:update config-ref="GenericDatabaseConnectorMySql" bulkMode="true" doc:name="Update User in database">
                         <db:parameterized-query><![CDATA[UPDATE sf_user SET 
@@ -49,14 +37,27 @@ lastname = #[payload.lastname],
 salesforce_id = #[payload.salesforce_id]
 WHERE email = #[payload.email]]]></db:parameterized-query>
 
+
                     </db:update>
                 </batch:commit>
             </batch:step>
-            <batch:step name="insertUserInDatabaseStep" filter-expression="#[recordVars['user'].size() &gt; 0]">
+            <batch:step name="insertUserInDatabaseStep" accept-expression="#[recordVars['user'].size() == 0]">
                 <batch:commit size="100" doc:name="Batch Commit">
+                    <dw:transform-message doc:name="Transform Salesforce User to db User">
+                        <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload map {
+	email: $.Email,
+	firstname: $.FirstName,
+	salesforce_id: $.Id,
+	lastname: $.LastName
+}]]></dw:set-payload>
+                    </dw:transform-message>
                     <db:insert config-ref="GenericDatabaseConnectorMySql" bulkMode="true" doc:name="Insert User in database">
                         <db:parameterized-query><![CDATA[INSERT INTO sf_user(firstname, lastname, salesforce_id, email)
 VALUES (#[payload.firstname], #[payload.lastname], #[payload.salesforce_id], #[payload.email])]]></db:parameterized-query>
+
 
                     </db:insert>
                 </batch:commit>

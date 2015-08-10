@@ -69,10 +69,10 @@ Follow other steps defined [here](#runonpremise) and once your app is all set an
 		</section>
 		<section id="application_configuration">
 		<![CDATA[
-+ http.port `9090` 
 + poll.frequencyMillis `60000`
 + poll.startDelayMillis `0`
 + watermark.defaultExpression `YESTERDAY`
++ page.size `200`
 
 #### SalesForce Connector configuration for company A
 + sfdc.a.username `bob.dylan@orga`
