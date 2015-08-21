@@ -187,7 +187,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sfdc.a.username `bob.dylan@orga`
 + sfdc.a.password `DylanPassword123`
 + sfdc.a.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-+ sfdc.a.url `https://login.salesforce.com/services/Soap/u/28.0`
++ sfdc.a.url `https://login.salesforce.com/services/Soap/u/32.0`
 
 #### Dabase connection url
 + database.url=`jdbc:mysql://localhost:3306/mulesoft?user=root`
