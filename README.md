@@ -180,7 +180,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 ### Application configuration
 + poll.frequencyMillis `60000`
 + poll.startDelayMillis `0`
-+ watermark.defaultExpression `YESTERDAY`
++ watermark.defaultExpression `2015-11-26T10:00:00Z`
 + page.size `200`
 
 #### SalesForce Connector configuration for company A
