@@ -52,7 +52,6 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		System.setProperty("poll.frequencyMillis", "10000");
 		System.setProperty("poll.startDelayMillis", "20000");
 		System.setProperty("watermark.default.expression", "#[groovy: new Date(System.currentTimeMillis() - 10000).format(\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\", TimeZone.getTimeZone('UTC'))]");
-		
 		System.setProperty("database.url", DBCREATOR.getDatabaseUrlWithName());
 		DBCREATOR.setUpDatabase();
 	}
@@ -153,6 +152,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 				.with("Id", existingUser)
 				.with("LastName", name)
 				.with("FirstName", name)
+				.with("IsActive", true)
 				.build();
 		return user;
 	}
