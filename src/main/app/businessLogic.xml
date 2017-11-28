@@ -16,11 +16,26 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 
     <batch:job name="syncUsersBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
+        <batch:input>
+            <dw:transform-message doc:name="Transform SFDC User to db User">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload map {
+	email: $.Email,
+	firstname: $.FirstName,
+	salesforce_id: $.Id,
+	lastname: $.LastName
+}]]></dw:set-payload>
+            </dw:transform-message>
+        </batch:input>
+
         <batch:process-records>
             <batch:step name="checkUserInDatabaseStep">
                 <enricher source="#[payload]" target="#[recordVars.user]" doc:name="Store payload into variable 'user'">
                     <db:select config-ref="GenericDatabaseConnectorMySql" doc:name="Query User by matching email from Database">
-                        <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from sf_user where email = #[payload.Email]]]></db:parameterized-query>
+                        <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from sf_user where email = #[payload.email]]]></db:parameterized-query>
+
 
 
 
@@ -30,6 +45,7 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 
             <batch:step name="updateUserInDatabaseStep" accept-expression="#[recordVars['user'].size() != 0]">
                 <batch:commit size="100" doc:name="Batch Commit">
+
                     <db:update config-ref="GenericDatabaseConnectorMySql" bulkMode="true" doc:name="Update User in database">
                         <db:parameterized-query><![CDATA[UPDATE sf_user SET 
 firstname = #[payload.firstname], 
@@ -43,17 +59,7 @@ WHERE email = #[payload.email]]]></db:parameterized-query>
             </batch:step>
             <batch:step name="insertUserInDatabaseStep" accept-expression="#[recordVars['user'].size() == 0]">
                 <batch:commit size="100" doc:name="Batch Commit">
-                    <dw:transform-message doc:name="Transform Salesforce User to db User">
-                        <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
----
-payload map {
-	email: $.Email,
-	firstname: $.FirstName,
-	salesforce_id: $.Id,
-	lastname: $.LastName
-}]]></dw:set-payload>
-                    </dw:transform-message>
+
                     <db:insert config-ref="GenericDatabaseConnectorMySql" bulkMode="true" doc:name="Insert User in database">
                         <db:parameterized-query><![CDATA[INSERT INTO sf_user(firstname, lastname, salesforce_id, email)
 VALUES (#[payload.firstname], #[payload.lastname], #[payload.salesforce_id], #[payload.email])]]></db:parameterized-query>
