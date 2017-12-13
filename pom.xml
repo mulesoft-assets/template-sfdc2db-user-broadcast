@@ -13,10 +13,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<app.runtime>4.0.0-SNAPSHOT</app.runtime>
-		<mule.maven.plugin.version>3.0.0-SNAPSHOT</mule.maven.plugin.version>
-		<mule.connectors.version>1.0.0-SNAPSHOT</mule.connectors.version>
-		<sfdc.connector.version>9.0.0-SNAPSHOT</sfdc.connector.version>
+		<app.runtime>4.0.0</app.runtime>
+		<mule.maven.plugin.version>3.0.0</mule.maven.plugin.version>
+		<mule.connectors.version>1.0.0</mule.connectors.version>
+		<sfdc.connector.version>9.0.0</sfdc.connector.version>
 		
 		<mysql.version>5.1.26</mysql.version>
 	</properties>
@@ -70,6 +70,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
         </dependency>	
+    	<dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-objectstore-connector</artifactId>
+            <version>${mule.connectors.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
     </dependencies>
 
 	<repositories>

@@ -1,5 +1,5 @@
 CREATE TABLE `User` (
-  `firstname` varchar(255) NOT NULL,
+  `firstname` varchar(255),
   `lastname` varchar(255) NOT NULL,
   `salesforce_id` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,

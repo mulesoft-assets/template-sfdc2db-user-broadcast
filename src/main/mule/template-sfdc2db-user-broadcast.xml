@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
 	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 	<salesforce:sfdc-config name="Salesforce_Sfdc_config"
 		doc:name="Salesforce Sfdc config" doc:id="38a0808d-8f32-4c87-a763-4db431b3c4cd">
 		<salesforce:basic-connection username="${sfdc.username}"
-			password="${sfdc.password}" securityToken="${sfdc.securityToken}" url="${sfdc.url}"/>
+			password="${sfdc.password}" securityToken="${sfdc.securityToken}"/>
 	</salesforce:sfdc-config>
 	
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="59194256-5c2f-49ea-8146-c46fbbf41c61" >
 		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.name}" />
 	</db:config>
+	<os:object-store name="watermarkStore" persistent="true"/>
 	<configuration-properties doc:name="Configuration properties" doc:id="5e262cea-0151-488f-97c5-6db702f83d2d" file="mule-artifact.properties" />
 	<configuration-properties file="common.properties" doc:name="Configuration properties" doc:id="523e4eea-d00f-4213-bde7-a2764a635851" />
 	<configuration-properties file="mule.${mule.env}.properties" doc:name="Configuration properties" doc:id="7115a17b-4a67-4607-8a7c-e8f91b0737de" />
@@ -30,9 +32,8 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 				<fixed-frequency frequency="${scheduler.frequency}" startDelay="${scheduler.start.delay}" />
 			</scheduling-strategy>
 		</scheduler>
-		<salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Users from Salesforce" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
-			<salesforce:salesforce-query>SELECT Email,FirstName,LastName,Id FROM User WHERE IsActive = true LIMIT 10</salesforce:salesforce-query>
-		</salesforce:query>
+		<flow-ref doc:name="sfdcQueryFlow" doc:id="ada07859-8839-4751-9623-68a08d31a472" name="sfdcQueryFlow"/>
+		<logger level="INFO" doc:name="Log Users to sync" doc:id="65934ef1-2939-4fab-bde9-1886331527ea" message="#['User objects to sync: ' ++ write(payload)]" />				
 		<batch:job jobName="syncUsersBatch" doc:id="204892ae-0d97-4326-beae-310c8d52b7a6">
 			<batch:process-records>
 				<batch:step name="checkUsersInDatabaseStep" doc:id="89713774-362a-4e92-9bdc-41e31802bf38">
@@ -82,5 +83,23 @@ output text/plain
 				<logger level="INFO" doc:name="Migration process has finished!" doc:id="b7575d38-7dbd-4602-9186-1bbb25234896" message="#[payload]" />
 			</batch:on-complete>
 		</batch:job>
+	</flow>	
+	<flow name="sfdcQueryFlow">
+		<os:retrieve key="watermark" objectStore="watermarkStore" target="lastQueryTimestamp" doc:name="Retrieve lastQueryTimestamp">
+        <os:default-value><![CDATA[${watermark.default.expression}]]></os:default-value>
+    </os:retrieve>
+   	<salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Users from Salesforce" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
+		<salesforce:salesforce-query>SELECT Email,FirstName,LastName,Id,LastModifiedDate FROM User WHERE IsActive = true AND LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
+		<salesforce:parameters><![CDATA[#[output applicaton/java
+---
+{
+	"lastModifiedDate" : vars.lastQueryTimestamp
+}]]]></salesforce:parameters>
+
+	</salesforce:query>
+    <os:store key="watermark" failIfPresent="false" failOnNullValue="false" objectStore="watermarkStore" doc:name="Store lastQueryTimestamp">
+        <os:value>#[max(payload map $.LastModifiedDate)]</os:value>
+    </os:store>
+
 	</flow>	
 </mule>
