@@ -26,19 +26,19 @@ Note that using this template is subject to the conditions of this [License Agre
 Please review the terms of the license before downloading and using this template. In short, you are allowed to use the template for free with Mule ESB Enterprise Edition, CloudHub, or as a trial in Anypoint Studio.
 
 # Use Case <a name="usecase"/>
-As a Salesforce admin I want to synchronize Users between Salesfoce and Database.
+As a Salesforce admin I want to migrate Users from Salesforce to Database.
 
-This Template should serve as a foundation for setting an online sync of Users from one SalesForce instance to database. Every time there is a new User or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the User on the target database table.
+This Template should serve as a foundation for setting an online sync of Users from one Salesforce instance to database. Every time there is a new User or a change in an already existing one, the integration will poll for changes in Salesforce source instance and it will be responsible for updating the User on the target database table.
 
 What about Passwords? When the User is updated in the target instance, the password is not changed and therefore there is nothing to concern about in this case. Password set in case of User creation is not being covered by this template considering that many different approaches can be selected.
 
 Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 
-As implemented, this Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
+As implemented, this Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
 
 The batch job is divided in *Process* and *On Complete* stages.
 
-The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest Salesforce updates/creations matching a filter criteria and executing the batch job.
+The integration is triggered by a scheduler defined in the flow that is going to trigger the application, querying newest Salesforce updates/creations matching a filter criteria and executing the batch job.
 
 During the *Process* stage, each Salesforce User will be filtered depending on, if it has an existing matching user in the Database.
 The last step of the *Process* stage will group the users and insert/update them in Database.
@@ -47,7 +47,7 @@ Finally during the *On Complete* stage the Template will log output statistics d
 
 # Considerations <a name="considerations"/>
 
-To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both source and destination systems, that must be made in order for all to run smoothly.
+To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both source and destination systems, that must be made in order for all to run smoothly. 
 **Failing to do so could lead to unexpected behavior of the template.**
 
 ## DB Considerations <a name="dbconsiderations"/>
@@ -111,9 +111,9 @@ column='486'
 ]
 ]
 ```
-1. **Users cannot be deleted in SalesForce:** For now, the only thing to do regarding users removal is disabling/deactivating them, but this won't make the username available for a new user.
-2. **Each user needs to be associated to a Profile:** SalesForce's profiles are what define the permissions the user will have for manipulating data and other users. Each SalesForce account has its own profiles. In this kick you will find a processor labeled *assignProfileId and Username to the User* where to map your Profile Ids from the source account to the ones in the target account.
-3. **Working with sandboxes for the same account**: Although each sandbox should be a completely different environment, Usernames cannot be repeated in different sandboxes, i.e. if you have a user with username *bob.dylan* in *sandbox A*, you will not be able to create another user with username *bob.dylan* in *sandbox B*. If you are indeed working with Sandboxes for the same SalesForce account you will need to map the source username to a different one in the target sandbox, for this purpose, please refer to the processor labeled *assign ProfileId and Username to the User*.
+1. **Users cannot be deleted in Salesforce:** For now, the only thing to do regarding users removal is disabling/deactivating them, but this won't make the username available for a new user.
+2. **Each user needs to be associated to a Profile:** Salesforce's profiles are what define the permissions the user will have for manipulating data and other users. Each Salesforce account has its own profiles. In this kick you will find a processor labeled *assignProfileId and Username to the User* where to map your Profile Ids from the source account to the ones in the target account.
+3. **Working with sandboxes for the same account**: Although each sandbox should be a completely different environment, Usernames cannot be repeated in different sandboxes, i.e. if you have a user with username *bob.dylan* in *sandbox A*, you will not be able to create another user with username *bob.dylan* in *sandbox B*. If you are indeed working with Sandboxes for the same Salesforce account you will need to map the source username to a different one in the target sandbox, for this purpose, please refer to the processor labeled *assign ProfileId and Username to the User*.
 
 
 
@@ -140,7 +140,7 @@ First thing to know if you are a newcomer to Mule is where to get the tools.
 
 
 ### Importing an Anypoint Template into Studio
-Mule Studio offers several ways to import a project into the workspace, for instance:
+Mule Studio offers several ways to import a project into the workspace, for instance: 
 
 + Anypoint Studio Project from File System
 + Packaged mule application (.jar)
@@ -153,13 +153,13 @@ Once you have imported you Anypoint Template into Anypoint Studio you need to fo
 
 + Locate the properties file `mule.dev.properties`, in src/main/resources
 + Complete all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
-+ Once that is done, right click on you Anypoint Template project folder
++ Once that is done, right click on you Anypoint Template project folder 
 + Hover you mouse over `"Run as"`
 + Click on  `"Mule Application"`
 
 
 ### Running on Mule ESB stand alone <a name="runonmuleesbstandalone"/>
-Complete all properties in one of the property files, for example in [mule.prod.properties](../master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`.
+Complete all properties in one of the property files, for example in [mule.prod.properties] (../master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`. 
 Once your app is all set and started, there is no need to do anything else. The application will poll Salesforce to know if there are any newly created or updated objects and synchronize them.
 
 ## Running on CloudHub <a name="runoncloudhub"/>
@@ -182,7 +182,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 
 **Watermarking default last query timestamp**
 + watermark.default.expression `2016-12-13T03:00:59Z`
-
+		
 **Salesforce Connector configuration**
 + sfdc.username `bob.dylan@org`
 + sfdc.password `DylanPassword123`
@@ -199,9 +199,9 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. User Broadcast Template calls to the API can be calculated using the formula:
 ***1 + X + X / ${page.size}***
 
-Being ***X*** the number of Users to be synchronized on each run.
+Being ***X*** the number of Users to be synchronized on each run. 
 
-The division by ***${page.size}*** is because by default, for each Upsert API Call, Users are gathered in groups of a number defined by the ${page.size}. Also consider that this calls are executed repeatedly every polling cycle.
+The division by ***${page.size}*** is because by default, for each Upsert API Call, Users are gathered in groups of a number defined by the ${page.size}. Also consider that this calls are executed repeatedly every polling cycle.	
 
 For instance if 10 records are fetched from origin instance, then 12 api calls will be made (1 + 10 + 1).
 
@@ -226,8 +226,8 @@ In the visual editor they can be found on the *Global Element* tab.
 
 
 ## businessLogic.xml<a name="businesslogicxml"/>
-Functional aspect of the Template is implemented on this XML, directed by one flow that will poll for SalesForce creations/updates.
-For the purpose of this particular Anypoint Template the *mainFlow* just executes the Batch Job which handles all the logic of it.
+Functional aspect of the Template is implemented on this XML, directed by one flow that will poll for Salesforce creations/updates. 
+For the purpose of this particular Template the *mainFlow* uses a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing), which handles all the logic of it.
 
 The several message processors constitute four high level actions that fully implement the logic of this Template:
 1. Firstly the Anypoint Template will go to the Salesforce and query all the existing users that match the filter criteria.
@@ -237,10 +237,13 @@ The several message processors constitute four high level actions that fully imp
 
 
 ## endpoints.xml<a name="endpointsxml"/>
-This is file is conformed by a Flow containing the Poll that will periodically query Salesforce for updated/created Users that meet the defined criteria in the query. And then executing the batch job process with the query results.
+This is file is conformed by a Flow containing the Scheduler that will periodically query Salesforce for updated/created Users that meet the defined criteria in the query. And then executing the batch job process with the query results.
 
 
 
 ## errorHandling.xml<a name="errorhandlingxml"/>
-This is the right place to handle how your integration will react depending on the different exceptions.
+This is the right place to handle how your integration will react depending on the different exceptions. 
 This file holds a [Error Handling](http://www.mulesoft.org/documentation/display/current/Error+Handling) that is referenced by the main flow in the business logic.
+
+
+
