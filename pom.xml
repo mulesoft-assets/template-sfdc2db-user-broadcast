@@ -7,7 +7,7 @@
         <version>2.1.2</version>
     </parent>
     <artifactId>template-sfdc2db-user-broadcast</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1-SNAPSHOT</version>
     <packaging>mule-application</packaging>
     <name>template-sfdc2db-user-broadcast</name>
     <build>
@@ -63,8 +63,4 @@
             <layout>default</layout>
         </repository>
     </repositories>
-
-  <scm>
-    <tag>v2.1.0</tag>
-  </scm>
 </project>
