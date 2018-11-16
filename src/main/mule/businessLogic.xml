@@ -16,8 +16,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 					<db:select config-ref="Database_Config"
 						doc:name="Query User by matching email from Database" doc:id="c93a20b0-4e0d-44ec-8c0f-831d31beea8b"
 						queryTimeoutUnit="NANOSECONDS" target="recordExists" targetValue="#[payload[0]]">
-						<db:sql>select firstname, lastname, id, email, salesforce_id from
-							User where email = :email
+						<db:sql>select firstname, lastname, id, email, salesforce_id from User where email = :email
 						</db:sql>
 						<db:input-parameters><![CDATA[#[{'email' : payload.Email}]]]></db:input-parameters>
 					</db:select>

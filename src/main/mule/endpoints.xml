@@ -30,10 +30,8 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 		</os:retrieve>
 		<salesforce:query config-ref="Salesforce_Sfdc_config"
 			doc:name="Query Users from Salesforce" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
-			<salesforce:salesforce-query>SELECT
-				Email,FirstName,LastName,Id,LastModifiedDate FROM User WHERE
-				IsActive = true AND LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
-			<salesforce:parameters><![CDATA[#[output applicaton/java
+			<salesforce:salesforce-query>SELECT Email, FirstName, LastName, Id, LastModifiedDate FROM User WHERE IsActive = true AND LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
 ---
 {
 	"lastModifiedDate" : vars.lastQueryTimestamp
