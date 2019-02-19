@@ -14,89 +14,101 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
     <munit:config name="test-suite.xml" />
 
     <configuration-properties doc:name="Configuration properties" file="mule.test.properties" />
-    <configuration-properties doc:name="Configuration properties" file="common.properties" />
 
     <munit:before-test name="test-suite-Before_Test" description="Before tests actions">
-		<salesforce:query doc:name="Get data from Salesforce" doc:id="437e2b6d-7eb0-4f1d-924a-21dba8b17f15" config-ref="Salesforce_Sfdc_config">
-			<salesforce:salesforce-query >SELECT Id, FirstName, LastName, Email FROM User WHERE Email IN (':email_update', ':email_create')</salesforce:salesforce-query>
-			<salesforce:parameters ><![CDATA[#[output application/java
+        <salesforce:query doc:name="Get data from Salesforce" doc:id="437e2b6d-7eb0-4f1d-924a-21dba8b17f15" config-ref="Salesforce_Sfdc_config">
+            <salesforce:salesforce-query>SELECT Id, FirstName, LastName, Email FROM User WHERE Email IN (':email_update', ':email_create')
+            </salesforce:salesforce-query>
+            <salesforce:parameters><![CDATA[#[output application/java
 ---
 {
 	"email_create" : p('test.create.email'),
 	"email_update" : p('test.update.email')
 }]]]></salesforce:parameters>
-		</salesforce:query>
-		<ee:transform doc:name="Save data to variable" doc:id="32d26d0a-a104-4aa7-bf6c-7ab4ed93bb06">
-			<ee:message>
-			</ee:message>
-			<ee:variables>
-				<ee:set-variable variableName="oldSfdcData"><![CDATA[%dw 2.0
-output application/java
----
-payload map ($ - 'type')]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<db:insert doc:name="Insert record for update" doc:id="03bc1188-748a-4bcc-8dcf-66f30e6180e5" config-ref="Database_Config">
-			<db:sql >INSERT INTO User (firstname, lastname, salesforce_id, email) VALUES (:FirstName, :LastName, :Id, :Email)</db:sql>
-			<db:input-parameters ><![CDATA[#[vars.oldSfdcData[0]]]]></db:input-parameters>
-		</db:insert>
-		<ee:transform doc:name='Prepare testing data for Salesforce' doc:id="8d6d89fd-ce2c-4d0b-9ef2-a48f7104de46">
+        </salesforce:query>
+        <ee:transform doc:name="Save data to variable" doc:id="32d26d0a-a104-4aa7-bf6c-7ab4ed93bb06">
             <ee:message>
             </ee:message>
             <ee:variables>
-				<ee:set-variable variableName="newSfdcData" ><![CDATA[%dw 2.0
+                <ee:set-variable variableName="oldSfdcData"><![CDATA[%dw 2.0
+output application/java
+---
+payload map ($ - 'type')]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <db:insert doc:name="Insert record for update" doc:id="03bc1188-748a-4bcc-8dcf-66f30e6180e5" config-ref="Database_Config">
+            <db:sql>INSERT INTO User (firstname, lastname, salesforce_id, email) VALUES (:FirstName, :LastName, :Id, :Email)</db:sql>
+            <db:input-parameters><![CDATA[#[vars.oldSfdcData[0]]]]></db:input-parameters>
+        </db:insert>
+        <ee:transform doc:name='Prepare testing data for Salesforce' doc:id="8d6d89fd-ce2c-4d0b-9ef2-a48f7104de46">
+            <ee:message>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="newSfdcData"><![CDATA[%dw 2.0
 output application/java
 ---
 vars.oldSfdcData map ($ - "LastName" ++ {"LastName":"LastNameSfdc" ++ randomInt(1000)})]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<salesforce:update type="User" doc:name="Update data in Salesforce" doc:id="5f61604f-98af-4caf-9fdb-584f6c81a4ce" config-ref="Salesforce_Sfdc_config">
-			<salesforce:records ><![CDATA[#[vars.newSfdcData]]]></salesforce:records>
-		</salesforce:update>
+        <salesforce:update type="User" doc:name="Update data in Salesforce" doc:id="5f61604f-98af-4caf-9fdb-584f6c81a4ce" config-ref="Salesforce_Sfdc_config">
+            <salesforce:records><![CDATA[#[vars.newSfdcData]]]></salesforce:records>
+        </salesforce:update>
     </munit:before-test>
     <munit:test name="test-suite-Test" description="Test" doc:id="6332c58f-ba5b-451a-8ca7-8d677e31fa9d">
-        <munit:enable-flow-sources >
-			<munit:enable-flow-source value="businessLogicFlow" />
-			<munit:enable-flow-source value="sfdcQueryFlow" />
-		</munit:enable-flow-sources>
-		<munit:execution>
-            <scripting:execute doc:name="Sleep for 10s before we start tests" doc:id="68f96218-bb52-4fbc-92c8-1b014988e3e1" engine="groovy">
-                <scripting:code>sleep(10000)</scripting:code>
-            </scripting:execute>
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="businessLogicFlow" />
+            <munit:enable-flow-source value="sfdcQueryFlow" />
+        </munit:enable-flow-sources>
+        <munit:execution>
             <flow-ref doc:name="Call sfdcQueryFlow" doc:id="e0479714-bce3-4ea8-9fbc-1c8ed7b5d185" name="sfdcQueryFlow" />
+            <ee:transform doc:name="Filter test Records" doc:id="a5e7162f-b782-4e7c-ae90-e07a34418d25">
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload filter ($.Email == p('test.create.email')
+    or $.Email == p('test.update.email')
+)]]></ee:set-payload>
+                </ee:message>
+            </ee:transform>
             <flow-ref doc:name="Call businessLogicFlow" doc:id="5592c1fa-6dc8-4956-b894-e0e2b025918f" name="businessLogicFlow" />
             <scripting:execute doc:name="Sleep for 30s until the processing is completed" doc:id="b09fe305-3000-4571-b824-8b555395ccb7"
                 engine="groovy">
                 <scripting:code>sleep(30000)</scripting:code>
             </scripting:execute>
-            <db:select doc:name="Query for User, which should be created in Database" doc:id="4d8fcc84-8942-4ba0-97b5-42e236a1a152" config-ref="Database_Config" target="resultCreate">
-				<db:sql >SELECT lastname FROM User WHERE email = :email</db:sql>
-				<db:input-parameters ><![CDATA[#[{'email' : p('test.create.email')}]]]></db:input-parameters>
-			</db:select>
-			<db:select doc:name="Query for User, which should be updated in Database" doc:id="5e1a0a90-f837-4183-bdf8-cedd0d840ae5" config-ref="Database_Config" target="resultUpdate" >
-				<db:sql >SELECT lastname FROM User WHERE email = :email</db:sql>
-				<db:input-parameters ><![CDATA[#[{'email' : p('test.update.email')}]]]></db:input-parameters>
-			</db:select>
+            <db:select doc:name="Query for User, which should be created in Database" doc:id="4d8fcc84-8942-4ba0-97b5-42e236a1a152" config-ref="Database_Config"
+                target="resultCreate">
+                <db:sql>SELECT lastname FROM User WHERE email = :email</db:sql>
+                <db:input-parameters><![CDATA[#[{'email' : p('test.create.email')}]]]></db:input-parameters>
+            </db:select>
+            <db:select doc:name="Query for User, which should be updated in Database" doc:id="5e1a0a90-f837-4183-bdf8-cedd0d840ae5" config-ref="Database_Config"
+                target="resultUpdate">
+                <db:sql>SELECT lastname FROM User WHERE email = :email</db:sql>
+                <db:input-parameters><![CDATA[#[{'email' : p('test.update.email')}]]]></db:input-parameters>
+            </db:select>
         </munit:execution>
         <munit:validation>
-			<munit-tools:assert-that doc:name="Assert that User in Database is added" doc:id="1e559409-a86b-47b9-bb44-cbcac54c4ade" expression="#[vars.resultCreate[0].lastname]" is="#[MunitTools::equalTo(vars.newSfdcData[1].LastName)]" message="User in Database wasn't added" />
-			<munit-tools:verify-call doc:name="Verify db:bulk-insert call" doc:id="37c864b0-b7ce-4ecb-9980-bcec5901a798" processor="db:bulk-insert" times="1" />
-			<munit-tools:assert-that doc:name="Assert that User in Database is updated" doc:id="e3a0d921-8b98-4a45-b821-e6dcb8ac1871" expression="#[vars.resultUpdate[0].lastname]" is="#[MunitTools::equalTo(vars.newSfdcData[0].LastName)]" message="User in Database wasn't updated" />
-			<munit-tools:verify-call doc:name="Verify db:bulk-update call" doc:id="d169a8c9-05fa-410f-bf1f-679ac50991ea" processor="db:bulk-update"
+            <munit-tools:assert-that doc:name="Assert that User in Database is added" doc:id="1e559409-a86b-47b9-bb44-cbcac54c4ade"
+                expression="#[vars.resultCreate[0].lastname]" is="#[MunitTools::equalTo(vars.newSfdcData[1].LastName)]" message="User in Database wasn't added" />
+            <munit-tools:verify-call doc:name="Verify db:bulk-insert call" doc:id="37c864b0-b7ce-4ecb-9980-bcec5901a798" processor="db:bulk-insert"
+                times="1" />
+            <munit-tools:assert-that doc:name="Assert that User in Database is updated" doc:id="e3a0d921-8b98-4a45-b821-e6dcb8ac1871"
+                expression="#[vars.resultUpdate[0].lastname]" is="#[MunitTools::equalTo(vars.newSfdcData[0].LastName)]" message="User in Database wasn't updated" />
+            <munit-tools:verify-call doc:name="Verify db:bulk-update call" doc:id="d169a8c9-05fa-410f-bf1f-679ac50991ea" processor="db:bulk-update"
                 times="1" />
         </munit:validation>
     </munit:test>
 
     <munit:after-test name="test-suite-After_Test" description="After tests actions" doc:id="5b85bb9e-67e6-47f7-8f71-53a39f147fc8">
-		<salesforce:update type="User" doc:name="Revert data in Salesforce" doc:id="274449f6-ee35-4567-bd35-02aa396d7de8" config-ref="Salesforce_Sfdc_config">
-			<salesforce:records ><![CDATA[#[vars.oldSfdcData]]]></salesforce:records>
-		</salesforce:update>
-		<db:delete doc:name="Delete test user from Database" doc:id="71d2428c-36ce-4b12-b375-2445d71f444c" config-ref="Database_Config">
-			<db:sql >DELETE FROM User WHERE email IN (:email_create, :email_update)</db:sql>
-			<db:input-parameters ><![CDATA[#[{
+        <salesforce:update type="User" doc:name="Revert data in Salesforce" doc:id="274449f6-ee35-4567-bd35-02aa396d7de8" config-ref="Salesforce_Sfdc_config">
+            <salesforce:records><![CDATA[#[vars.oldSfdcData]]]></salesforce:records>
+        </salesforce:update>
+        <db:delete doc:name="Delete test user from Database" doc:id="71d2428c-36ce-4b12-b375-2445d71f444c" config-ref="Database_Config">
+            <db:sql>DELETE FROM User WHERE email IN (:email_create, :email_update)</db:sql>
+            <db:input-parameters><![CDATA[#[{
 	'email_create' : p('test.create.email'),
 	'email_update' : p('test.update.email')
 }]]]></db:input-parameters>
-		</db:delete>
+        </db:delete>
     </munit:after-test>
 </mule>
