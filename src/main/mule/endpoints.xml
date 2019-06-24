@@ -26,7 +26,7 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	<flow name="sfdcQueryFlow">
 		<os:retrieve key="watermark" objectStore="watermarkStore"
 			target="lastQueryTimestamp" doc:name="Retrieve lastQueryTimestamp">
-			<os:default-value><![CDATA[${watermark.default.expression}]]></os:default-value>
+			<os:default-value ><![CDATA[#[read(p('watermark.default.expression'))]]]></os:default-value>
 		</os:retrieve>
 		<salesforce:query config-ref="Salesforce_Sfdc_config"
 			doc:name="Query Users from Salesforce" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
